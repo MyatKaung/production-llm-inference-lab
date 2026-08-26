@@ -1,5 +1,9 @@
 # Week 06 - Profile, Tune, and Repeat
 
+## Mini-project: choose serving profiles
+
+Turn the experiment matrix into three reproducible configurations: balanced, latency-first, and throughput-first.
+
 ## Read
 
 - HLSO: Chapter 9, `LLM Serving Optimization Plan`, all eight `Optimize Qwen3-14B serving with vLLM` steps, and `Common Optimization Trade-offs`.
@@ -17,4 +21,3 @@ Ranked configuration table with `balanced`, `latency`, and `throughput` profiles
 ## Course alignment
 
 Course Weeks 3-5: profiling tools, optimization, and hardware/model choice.
-

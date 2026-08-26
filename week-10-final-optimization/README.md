@@ -1,5 +1,9 @@
 # Week 10 - Advanced Decision and Final Report
 
+## Mini-project: defend one production decision
+
+Choose one advanced feature from the evidence, run the final comparison, complete the audit, and publish a portfolio-ready engineering report.
+
 ## Read selectively
 
 - HLSO: Chapter 7, `Advanced KV Caching` and `Cost and Latency Calculations`; Chapter 10, `Semantic Caching`, `Performance Profiling Strategies`, and `Multi-LoRA Serving`.
@@ -17,4 +21,3 @@ Final report, architecture decisions, production recommendation, runbook, known 
 ## Course alignment
 
 Course Weeks 9-10: advanced inference systems, final design review, and portfolio presentation.
-

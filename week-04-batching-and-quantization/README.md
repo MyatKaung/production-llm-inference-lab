@@ -1,5 +1,9 @@
 # Week 04 - Essential Optimizations
 
+## Mini-project: prove three optimization effects
+
+Run controlled experiments for batching, quantization, and prefix caching. The deliverable is evidence, not a collection of flags.
+
 ## Read
 
 - HLSO: Chapter 6, `Dynamic Batching`, `Continuous Batching`, `Continuous Batching with Chunked Prefill`, `FlashAttention`, `PagedAttention`, `Quantization`, `Hands-on quantization`, `Running benchmarks`, and `Prefix Caching`.
@@ -17,4 +21,3 @@ Three experiment manifests, raw results, quality deltas, and a decision table fo
 ## Course alignment
 
 Course Weeks 3-4: profiling and step-by-step optimization.
-

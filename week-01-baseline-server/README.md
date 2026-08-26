@@ -1,5 +1,9 @@
 # Week 01 - Request-to-Token Baseline
 
+## Mini-project: build a tiny inference server
+
+Build one working Hugging Face server and make the first defensible measurement of how a request becomes prefill, decode, and streamed tokens.
+
 ## Read
 
 - HLSO: Chapter 2, `Executing LLM Generation: A Step-by-Step Walkthrough`, `Enable the KV Cache to Boost Performance`, `The Prefill and Decode Phases`, `LLM Streaming Serving Basics`, and `LLM Batch Serving Basics`.
@@ -17,4 +21,3 @@ In `01-baseline-serving`, serve one small instruct model with Hugging Face Trans
 ## Course alignment
 
 Course Week 2: what happens when an LLM call is made.
-

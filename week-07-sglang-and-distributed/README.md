@@ -1,5 +1,9 @@
 # Week 07 - SGLang and Distributed Strategies
 
+## Mini-project: compare inference engines
+
+Add SGLang and speculative decoding, then decide from measurements when vLLM or SGLang is the better backend for this workload.
+
 ## Read
 
 - HLSO: Chapter 7, `Speculative Decoding`, `Hands-on Speculative Decoding`, `Multi-GPU and Multi-Node Inferencing`, `Tensor Parallelism and Pipeline Parallelism`, `Prefill-Decode Disaggregation`, and `Advanced KV Caching`.
@@ -17,4 +21,3 @@ Speculative-decoding raw results, vLLM-versus-SGLang comparison, and framework-s
 ## Course alignment
 
 Course Weeks 7-8: inference optimization and distributed serving.
-

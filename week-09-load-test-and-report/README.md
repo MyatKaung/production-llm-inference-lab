@@ -1,5 +1,9 @@
 # Week 09 - Distributed Benchmarking
 
+## Mini-project: run the service under load
+
+Run realistic traffic, a soak test, and one failure injection. Produce the first report that a platform engineer could use for capacity planning.
+
 ## Read
 
 - HLSO: Chapter 4, `Latency Metrics`, `Throughput Metrics`, `Best Practices for Performance Measurement`, and `Continuously monitor performance in production`; revisit Chapter 9 `Step 3: Define Evaluation Metrics`.
@@ -17,4 +21,3 @@ Raw JSON/CSV, environment capture, p50/p95/p99 plots, TTFT/TPOT/throughput repor
 ## Course alignment
 
 Course Weeks 2-3 and 8-9: benchmarking, observability, and scale decisions.
-

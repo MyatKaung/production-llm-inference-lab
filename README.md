@@ -18,17 +18,25 @@ Tests   -> benchmark runner -> reproducible reports
 
 The final system supports streaming and non-streaming responses, configurable backends, request limits, production metrics, Kubernetes deployment, and repeatable performance experiments.
 
-## Five implementation work areas
+## Ten-week project structure
 
-| Folder | Responsibility | Main output |
+Each week is a small, reviewable project. You finish its README acceptance criteria and commit its artifact before moving to the next week.
+
+| Week | Mini-project | Main output |
 | --- | --- | --- |
-| `01-baseline-serving` | Establish the simplest correct server and request-to-token mental model | Hugging Face baseline and measurements |
-| `02-inference-gateway` | Own the public API, streaming, routing, limits, and telemetry | OpenAI-compatible gateway |
-| `03-optimization-lab` | Run controlled vLLM/SGLang optimization experiments | Experiment configs and result tables |
-| `04-distributed-serving` | Package and operate the system on Kubernetes | Manifests, scaling tests, and runbooks |
-| `05-benchmarks-report` | Keep workloads, raw results, plots, and conclusions reproducible | Final engineering report |
+| [00](week-00-hardware-preflight/README.md) | Hardware and budget preflight | Hardware decision record |
+| [01](week-01-baseline-server/README.md) | Request-to-token baseline server | `baseline.json` |
+| [02](week-02-inference-gateway/README.md) | OpenAI-compatible gateway | Gateway API and tests |
+| [03](week-03-profile-and-evaluate/README.md) | Profile and quality gate | Evaluation set and bottleneck report |
+| [04](week-04-batching-and-quantization/README.md) | Batching and quantization lab | Controlled experiment results |
+| [05](week-05-vllm-server/README.md) | vLLM serving backend | HF-versus-vLLM report |
+| [06](week-06-tune-and-benchmark/README.md) | Inference tuning matrix | Chosen serving profiles |
+| [07](week-07-sglang-and-distributed/README.md) | SGLang and distributed serving | Framework ADR and speculative-decoding result |
+| [08](week-08-kubernetes-serving/README.md) | Production-like Kubernetes service | Deployment and runbook |
+| [09](week-09-load-test-and-report/README.md) | Load test and failure report | p50/p95/p99 report |
+| [10](week-10-final-optimization/README.md) | Final optimization and design review | Portfolio-ready final report |
 
-The weekly curriculum is navigation/documentation, not a sixth implementation area. It lives in [`docs/weekly`](docs/weekly/README.md). The five folders above are where the actual system and its evidence belong.
+The original five work areas are distributed across these ten weekly projects. The repository is organized by week so the learning path and the code evidence stay together.
 
 ## Success criteria
 
@@ -45,4 +53,4 @@ The weekly curriculum is navigation/documentation, not a sixth implementation ar
 
 Use a model that fits the hardware and preserves the experiment. Start with a 0.5B-3B instruct model locally, use 7B-14B when a suitable GPU is available, and attempt 70B only when multi-GPU capacity is explicitly available. The project evaluates engineering decisions; it does not require pretending to run a 405B model.
 
-Complete [WEEK-0-HARDWARE-BUDGET.md](WEEK-0-HARDWARE-BUDGET.md), then use the [weekly reading guides](docs/weekly/README.md) alongside [ROADMAP.md](ROADMAP.md). [OUTSOURCE_SPEC.md](OUTSOURCE_SPEC.md) strictly limits outside help to mechanical chores so the portfolio remains defensible.
+Start with [Week 00](week-00-hardware-preflight/README.md), use [ROADMAP.md](ROADMAP.md) for the complete mapping, and follow [OUTSOURCE_SPEC.md](OUTSOURCE_SPEC.md) for the strict boundary on outside help.

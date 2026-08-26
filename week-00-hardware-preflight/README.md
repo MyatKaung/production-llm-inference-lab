@@ -1,5 +1,9 @@
 # Week 00 - Hardware and Budget Preflight
 
+## Mini-project: choose the lab hardware
+
+Produce a one-page decision record that says what runs locally, what needs rented NVIDIA GPU time, and the maximum amount you will spend.
+
 This is preparation, before the ten-week clock.
 
 ## Read
@@ -19,4 +23,3 @@ Commit the hardware decision, spend cap, shutdown rule, and cost-per-million-out
 ## Course alignment
 
 Course Week 1: GPUs, hardware specs, and the physics/cost model of inference.
-

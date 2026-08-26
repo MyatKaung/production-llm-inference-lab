@@ -1,5 +1,9 @@
 # Week 02 - Inference Gateway
 
+## Mini-project: build an OpenAI-compatible gateway
+
+Build a gateway that accepts one stable client API and can forward the request to the Week 1 model server without exposing backend details to the client.
+
 ## Read
 
 - HLSO: Chapter 3, `Build an Online LLM Serving Service from Scratch`, `Service Architecture`, `Implement Single Generation Request Handling`, `Batching`, `Streaming with Batching`, and `A General Design for Single-Model LLM Serving`.
@@ -17,4 +21,3 @@ API contract tests, gateway sequence diagram, backend interface, and a working c
 ## Course alignment
 
 Course Week 2: inference gateway and inference system design.
-

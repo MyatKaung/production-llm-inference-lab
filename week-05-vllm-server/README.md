@@ -1,5 +1,9 @@
 # Week 05 - vLLM Internals and Serving
 
+## Mini-project: replace the baseline with vLLM
+
+Deploy vLLM behind the existing gateway and explain the performance difference using its scheduler and KV-cache behavior.
+
 ## Read
 
 - HLSO: Chapter 8, `vLLM`, `vLLM's Architecture`, `LLMEngine and EngineCore`, `Scheduler`, `ModelExecutor, (GPU) Worker, and ModelRunner`, `Generation-Request Execution Workflow`, and `vLLM's Layered Optimization Strategy`.
@@ -17,4 +21,3 @@ Version-pinned vLLM launch config, integration test, profiler note, and baseline
 ## Course alignment
 
 Course Weeks 4-5: inference engine internals and serving.
-

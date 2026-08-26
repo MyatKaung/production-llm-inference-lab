@@ -10,7 +10,7 @@ All references use chapter and section names so they are followable in both EPUB
 
 ## Week 0 - Hardware and Budget Preflight
 
-Complete this before starting the ten-week clock. Use [WEEK-0-HARDWARE-BUDGET.md](WEEK-0-HARDWARE-BUDGET.md) to record:
+Complete this before starting the ten-week clock. The matching mini-project is [Week 00](week-00-hardware-preflight/README.md). Use [WEEK-0-HARDWARE-BUDGET.md](WEEK-0-HARDWARE-BUDGET.md) to record:
 
 - local Mac capabilities and the smallest model that runs correctly;
 - whether vLLM-Metal is useful for local smoke tests;

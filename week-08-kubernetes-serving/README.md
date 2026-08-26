@@ -1,5 +1,9 @@
 # Week 08 - Production-Like Kubernetes Stack
 
+## Mini-project: operate one production-like service
+
+Deploy the gateway and model server on a single-node Kubernetes environment with probes, limits, telemetry, graceful shutdown, and rollback.
+
 ## Read
 
 - HLSO: Chapter 4, `LLM Serving in Enterprise Systems`, `Public API Layer`, `Resource Management Layer`, `Model Selection and Orchestration Layer`, `Distributed Serving Layer`, `Core Inference Layer`, `Model Optimization Layer`, `Building with an Open Source Stack`, and `Build or Buy? Understanding Strategies`.
@@ -17,4 +21,3 @@ Manifests or Helm chart, dashboard, failure notes, and operator runbook. Documen
 ## Course alignment
 
 Course Weeks 6-8: production platform, resource management, and scaling architecture.
-

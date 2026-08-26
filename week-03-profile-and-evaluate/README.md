@@ -1,5 +1,9 @@
 # Week 03 - Hardware Budget and Baseline Profile
 
+## Mini-project: create the measurement and quality gate
+
+Build the benchmark input set, deterministic quality scorer, hardware feasibility sheet, and baseline profile that every later optimization must pass.
+
 ## Read
 
 - HLSO: Chapter 5, `Reading GPU specs`, `Estimating Model Size`, `Estimating KV Cache Size`, `Boundaries of GPU Compute and Memory Bandwidth`, and `Applying Arithmetic Intensity Analysis to the LLM Prefill and Decode Phases`.
@@ -17,4 +21,3 @@ Hardware/model feasibility sheet, baseline bottleneck report, evaluation set, sc
 ## Course alignment
 
 Course Weeks 1-3: hardware, request-to-token reasoning, and profiling.
-
