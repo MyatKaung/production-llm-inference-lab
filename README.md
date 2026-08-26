@@ -43,4 +43,4 @@ The final system supports streaming and non-streaming responses, configurable ba
 
 Use a model that fits the hardware and preserves the experiment. Start with a 0.5B-3B instruct model locally, use 7B-14B when a suitable GPU is available, and attempt 70B only when multi-GPU capacity is explicitly available. The project evaluates engineering decisions; it does not require pretending to run a 405B model.
 
-Complete [WEEK-0-HARDWARE-BUDGET.md](WEEK-0-HARDWARE-BUDGET.md), then follow [ROADMAP.md](ROADMAP.md) for the ten-week reading and build order. [OUTSOURCE_SPEC.md](OUTSOURCE_SPEC.md) strictly limits outside help to mechanical chores so the portfolio remains defensible.
+Complete [WEEK-0-HARDWARE-BUDGET.md](WEEK-0-HARDWARE-BUDGET.md), then use the [weekly reading guides](05-benchmarks-report/weekly/README.md) alongside [ROADMAP.md](ROADMAP.md). [OUTSOURCE_SPEC.md](OUTSOURCE_SPEC.md) strictly limits outside help to mechanical chores so the portfolio remains defensible.
