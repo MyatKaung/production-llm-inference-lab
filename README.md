@@ -18,7 +18,7 @@ Tests   -> benchmark runner -> reproducible reports
 
 The final system supports streaming and non-streaming responses, configurable backends, request limits, production metrics, Kubernetes deployment, and repeatable performance experiments.
 
-## Five work areas
+## Five implementation work areas
 
 | Folder | Responsibility | Main output |
 | --- | --- | --- |
@@ -27,6 +27,8 @@ The final system supports streaming and non-streaming responses, configurable ba
 | `03-optimization-lab` | Run controlled vLLM/SGLang optimization experiments | Experiment configs and result tables |
 | `04-distributed-serving` | Package and operate the system on Kubernetes | Manifests, scaling tests, and runbooks |
 | `05-benchmarks-report` | Keep workloads, raw results, plots, and conclusions reproducible | Final engineering report |
+
+The weekly curriculum is navigation/documentation, not a sixth implementation area. It lives in [`docs/weekly`](docs/weekly/README.md). The five folders above are where the actual system and its evidence belong.
 
 ## Success criteria
 
@@ -43,4 +45,4 @@ The final system supports streaming and non-streaming responses, configurable ba
 
 Use a model that fits the hardware and preserves the experiment. Start with a 0.5B-3B instruct model locally, use 7B-14B when a suitable GPU is available, and attempt 70B only when multi-GPU capacity is explicitly available. The project evaluates engineering decisions; it does not require pretending to run a 405B model.
 
-Complete [WEEK-0-HARDWARE-BUDGET.md](WEEK-0-HARDWARE-BUDGET.md), then use the [weekly reading guides](05-benchmarks-report/weekly/README.md) alongside [ROADMAP.md](ROADMAP.md). [OUTSOURCE_SPEC.md](OUTSOURCE_SPEC.md) strictly limits outside help to mechanical chores so the portfolio remains defensible.
+Complete [WEEK-0-HARDWARE-BUDGET.md](WEEK-0-HARDWARE-BUDGET.md), then use the [weekly reading guides](docs/weekly/README.md) alongside [ROADMAP.md](ROADMAP.md). [OUTSOURCE_SPEC.md](OUTSOURCE_SPEC.md) strictly limits outside help to mechanical chores so the portfolio remains defensible.
