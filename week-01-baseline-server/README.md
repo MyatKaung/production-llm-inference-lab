@@ -14,6 +14,19 @@ Build one working Hugging Face server and make the first defensible measurement 
 
 In `01-baseline-serving`, serve one small instruct model with Hugging Face Transformers. Expose streaming and non-streaming endpoints. Measure prompt tokens, output tokens, TTFT, inter-token latency, total latency, and throughput.
 
+The implementation files are now `server.py` and `tests/test_server.py`. From the repository root, start the server with:
+
+```bash
+uv run --python .venv/bin/python uvicorn server:app \
+  --app-dir week-01-baseline-server --host 127.0.0.1 --port 8001
+```
+
+Run the fake-engine tests without loading the real model:
+
+```bash
+uv run --python .venv/bin/python pytest week-01-baseline-server/tests/test_server.py -q
+```
+
 ## Test today
 
 Run the same prompt through both endpoints after one warm-up request. Use a short prompt and a longer prompt, then request a fixed output length. Repeat each case at least 5 times and report median plus p95.
