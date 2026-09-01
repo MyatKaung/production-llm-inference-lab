@@ -14,9 +14,22 @@ Deploy vLLM behind the existing gateway and explain the performance difference u
 
 Serve the selected model with vLLM. Route the gateway to it. Compare Hugging Face and vLLM with the exact same workload and record server flags, memory use, batching, and failure limits.
 
+## Test today
+
+Pin the vLLM version and model revision. Start vLLM with the smallest viable configuration, call it through the gateway, and run the Week 3 benchmark unchanged. Confirm that streaming, token limits, timeouts, and errors still behave at the gateway boundary.
+
+Compare Hugging Face and vLLM on identical prompts, output limits, concurrency, warm-up, and sample count. Inspect vLLM metrics or logs for scheduler behavior, KV-cache usage, running/waiting requests, and rejected requests. Add one profiler trace or timeline and use it to explain one observed difference.
+
 ## Output
 
 Version-pinned vLLM launch config, integration test, profiler note, and baseline-versus-vLLM report.
+
+## Done when
+
+- [ ] The gateway can switch between the two backends without client changes.
+- [ ] The comparison is apples-to-apples and reproducible.
+- [ ] Memory and failure limits are explicit.
+- [ ] At least one scheduler/KV-cache observation explains the result.
 
 ## Course alignment
 

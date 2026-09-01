@@ -14,9 +14,22 @@ Deploy the gateway and model server on a single-node Kubernetes environment with
 
 Deploy gateway, model server, Prometheus, and OpenTelemetry to a single-node production-like Kubernetes environment. Add probes, graceful shutdown, rate limiting, resources, and canary rollback.
 
+## Test today
+
+Deploy the smallest working stack. Verify service discovery, readiness before traffic, liveness after a stalled process, metrics scraping, trace propagation, and graceful termination while a stream is active. Exercise rate limiting and confirm the client receives a bounded error instead of an unbounded queue.
+
+Deploy a deliberately different canary configuration, send a small percentage of traffic to it, compare its metrics, then roll it back. Inject one backend failure or kill one pod and record detection time, user-visible errors, recovery behavior, and lost in-flight requests.
+
 ## Output
 
 Manifests or Helm chart, dashboard, failure notes, and operator runbook. Document multi-node autoscaling unless Week 6 data justifies deploying it.
+
+## Done when
+
+- [ ] Probes, resource requests/limits, shutdown, and rate limits are tested.
+- [ ] Metrics and traces identify a request end to end.
+- [ ] Canary and rollback are demonstrated.
+- [ ] The runbook has startup, incident, rollback, and shutdown procedures.
 
 ## Course alignment
 

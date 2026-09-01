@@ -14,9 +14,22 @@ Build a gateway that accepts one stable client API and can forward the request t
 
 In `02-inference-gateway`, implement `/v1/chat/completions`. Add streaming SSE, request IDs, timeout, cancellation, input/output token limits, backend adapters, and basic Prometheus metrics.
 
+## Test today
+
+Use a fake backend first, then the Week 1 server. Test one successful request in each mode and these failure paths: malformed JSON, missing messages, too many input tokens, too many output tokens, backend timeout, backend 5xx, client disconnect during streaming, and unknown backend name.
+
+For every request verify a request ID, bounded duration, structured error shape, and a metric increment. For streaming, verify that cancellation reaches the backend and that no tokens are emitted after cancellation. The client must call only the gateway URL.
+
 ## Output
 
 API contract tests, gateway sequence diagram, backend interface, and a working client that does not call the model server directly.
+
+## Done when
+
+- [ ] Contract tests pass without a real model.
+- [ ] Integration tests pass against the Week 1 server.
+- [ ] Non-streaming and SSE responses are OpenAI-compatible enough for the chosen client.
+- [ ] Timeout, cancellation, limits, IDs, and backend errors are observable.
 
 ## Course alignment
 

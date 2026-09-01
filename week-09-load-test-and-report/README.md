@@ -14,9 +14,24 @@ Run realistic traffic, a soak test, and one failure injection. Produce the first
 
 Run interactive-chat, long-context-prefill, and throughput-batch workloads at concurrency 1, 4, 16, and 32 where hardware allows. Add a 30-minute soak and one injected failure.
 
+## Test today
+
+Define the workload mix before running the test. For each workload, save the request generator version, model revision, prompt/output distributions, concurrency, warm-up, duration, and SLO. Run a small smoke load first, then the full matrix.
+
+Report TTFT, TPOT/ITL, end-to-end latency, output-token throughput, queue time, GPU memory/utilization, error rate, and cost assumptions at p50/p95/p99. Run the soak test and inject one failure. Mark cold-start results separately from warm-service results.
+
+Calculate scaling efficiency as measured throughput divided by ideal linear throughput, and explain any tail-latency or error-rate inflection. Do not call a configuration production-ready unless the quality gate and SLO both pass.
+
 ## Output
 
 Raw JSON/CSV, environment capture, p50/p95/p99 plots, TTFT/TPOT/throughput report, error budget, quality results, and scaling-efficiency calculation.
+
+## Done when
+
+- [ ] Three workload definitions and exact commands are saved.
+- [ ] The 30-minute soak completes or its failure is explained.
+- [ ] One failure injection has an operator-facing result.
+- [ ] Capacity and limits are stated from data, including uncertainty.
 
 ## Course alignment
 

@@ -14,9 +14,22 @@ Choose one advanced feature from the evidence, run the final comparison, complet
 
 Choose one advanced feature based on evidence: constrained decoding, multi-LoRA, semantic caching, or prefill/decode disaggregation. Run the final before/after benchmark. Complete the AISPE Appendix A self-audit as `done`, `not applicable`, or `deliberately skipped`.
 
+## Test today
+
+Choose one feature only, and write the decision hypothesis before implementation. Re-run the Week 9 workload with the same model, quality gate, SLOs, warm-up, sample count, and environment. Compare before/after latency, throughput, memory, errors, cost, and quality.
+
+Perform a reproducibility run from a clean environment using the documented command. Ask whether the result is large enough to matter operationally, not merely statistically different. Record what you deliberately did not build and why.
+
 ## Output
 
 Final report, architecture decisions, production recommendation, runbook, known limits, appendix self-audit, and one-command reproduction path.
+
+## Done when
+
+- [ ] One advanced feature has a before/after result.
+- [ ] The final recommendation names workload, SLO, cost, and quality assumptions.
+- [ ] A clean-environment reproduction succeeds.
+- [ ] The self-audit labels every relevant item `done`, `not applicable`, or `deliberately skipped` with a reason.
 
 ## Course alignment
 

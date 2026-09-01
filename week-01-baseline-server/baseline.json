@@ -1,0 +1,179 @@
+{
+  "model_id": "Qwen/Qwen2.5-0.5B-Instruct",
+  "device": "mps",
+  "torch_version": "2.13.0",
+  "transformers_version": "5.16.1",
+  "generation": {
+    "max_new_tokens": 64,
+    "do_sample": false,
+    "warmups_per_prompt": 1,
+    "measured_runs_per_prompt": 5
+  },
+  "results": [
+    {
+      "text": "Caching is the process of storing frequently accessed data in memory to reduce the number of requests made to the server, improving performance and reducing load on the server.",
+      "prompt_tokens": 36,
+      "output_tokens": 33,
+      "total_latency_seconds": 0.5615240419974725,
+      "output_tokens_per_second": 58.76863238591044,
+      "prompt_name": "short",
+      "repeat": 1,
+      "model_id": "Qwen/Qwen2.5-0.5B-Instruct",
+      "device": "mps"
+    },
+    {
+      "text": "Caching is the process of storing frequently accessed data in memory to reduce the number of requests made to the server, improving performance and reducing load on the server.",
+      "prompt_tokens": 36,
+      "output_tokens": 33,
+      "total_latency_seconds": 0.5620779999990191,
+      "output_tokens_per_second": 58.710712748155224,
+      "prompt_name": "short",
+      "repeat": 2,
+      "model_id": "Qwen/Qwen2.5-0.5B-Instruct",
+      "device": "mps"
+    },
+    {
+      "text": "Caching is the process of storing frequently accessed data in memory to reduce the number of requests made to the server, improving performance and reducing load on the server.",
+      "prompt_tokens": 36,
+      "output_tokens": 33,
+      "total_latency_seconds": 0.5488165830029175,
+      "output_tokens_per_second": 60.12937841534678,
+      "prompt_name": "short",
+      "repeat": 3,
+      "model_id": "Qwen/Qwen2.5-0.5B-Instruct",
+      "device": "mps"
+    },
+    {
+      "text": "Caching is the process of storing frequently accessed data in memory to reduce the number of requests made to the server, improving performance and reducing load on the server.",
+      "prompt_tokens": 36,
+      "output_tokens": 33,
+      "total_latency_seconds": 0.5488698340013798,
+      "output_tokens_per_second": 60.123544701706166,
+      "prompt_name": "short",
+      "repeat": 4,
+      "model_id": "Qwen/Qwen2.5-0.5B-Instruct",
+      "device": "mps"
+    },
+    {
+      "text": "Caching is the process of storing frequently accessed data in memory to reduce the number of requests made to the server, improving performance and reducing load on the server.",
+      "prompt_tokens": 36,
+      "output_tokens": 33,
+      "total_latency_seconds": 0.5491790829983074,
+      "output_tokens_per_second": 60.08968844886196,
+      "prompt_name": "short",
+      "repeat": 5,
+      "model_id": "Qwen/Qwen2.5-0.5B-Instruct",
+      "device": "mps"
+    },
+    {
+      "text": "An HTTP request is typically initiated by the client (e.g., a web browser) making a request to a server. The request includes various parameters such as headers and query strings that define the nature of the request.\n\nWhen the client sends the request, it generates a unique token or identifier for each request. This token is",
+      "prompt_tokens": 45,
+      "output_tokens": 64,
+      "total_latency_seconds": 1.0674458749999758,
+      "output_tokens_per_second": 59.956201526378514,
+      "prompt_name": "medium",
+      "repeat": 1,
+      "model_id": "Qwen/Qwen2.5-0.5B-Instruct",
+      "device": "mps"
+    },
+    {
+      "text": "An HTTP request is typically initiated by the client (e.g., a web browser) making a request to a server. The request includes various parameters such as headers and query strings that define the nature of the request.\n\nWhen the client sends the request, it generates a unique token or identifier for each request. This token is",
+      "prompt_tokens": 45,
+      "output_tokens": 64,
+      "total_latency_seconds": 1.0607029169987072,
+      "output_tokens_per_second": 60.33734703124042,
+      "prompt_name": "medium",
+      "repeat": 2,
+      "model_id": "Qwen/Qwen2.5-0.5B-Instruct",
+      "device": "mps"
+    },
+    {
+      "text": "An HTTP request is typically initiated by the client (e.g., a web browser) making a request to a server. The request includes various parameters such as headers and query strings that define the nature of the request.\n\nWhen the client sends the request, it generates a unique token or identifier for each request. This token is",
+      "prompt_tokens": 45,
+      "output_tokens": 64,
+      "total_latency_seconds": 1.0674002920022758,
+      "output_tokens_per_second": 59.95876193732908,
+      "prompt_name": "medium",
+      "repeat": 3,
+      "model_id": "Qwen/Qwen2.5-0.5B-Instruct",
+      "device": "mps"
+    },
+    {
+      "text": "An HTTP request is typically initiated by the client (e.g., a web browser) making a request to a server. The request includes various parameters such as headers and query strings that define the nature of the request.\n\nWhen the client sends the request, it generates a unique token or identifier for each request. This token is",
+      "prompt_tokens": 45,
+      "output_tokens": 64,
+      "total_latency_seconds": 1.0661002079978061,
+      "output_tokens_per_second": 60.031880230279164,
+      "prompt_name": "medium",
+      "repeat": 4,
+      "model_id": "Qwen/Qwen2.5-0.5B-Instruct",
+      "device": "mps"
+    },
+    {
+      "text": "An HTTP request is typically initiated by the client (e.g., a web browser) making a request to a server. The request includes various parameters such as headers and query strings that define the nature of the request.\n\nWhen the client sends the request, it generates a unique token or identifier for each request. This token is",
+      "prompt_tokens": 45,
+      "output_tokens": 64,
+      "total_latency_seconds": 1.05717766700036,
+      "output_tokens_per_second": 60.538547112515005,
+      "prompt_name": "medium",
+      "repeat": 5,
+      "model_id": "Qwen/Qwen2.5-0.5B-Instruct",
+      "device": "mps"
+    },
+    {
+      "text": "An HTTP request is typically initiated by the client (e.g., a web browser) making a request to a server (e.g., a web server). The client sends a request message containing information about itself and the action it wants to perform. This message includes details such as the URL of the resource being requested, the",
+      "prompt_tokens": 1111,
+      "output_tokens": 64,
+      "total_latency_seconds": 1.5008537499998056,
+      "output_tokens_per_second": 42.64239603626155,
+      "prompt_name": "long",
+      "repeat": 1,
+      "model_id": "Qwen/Qwen2.5-0.5B-Instruct",
+      "device": "mps"
+    },
+    {
+      "text": "An HTTP request is typically initiated by the client (e.g., a web browser) making a request to a server (e.g., a web server). The client sends a request message containing information about itself and the action it wants to perform. This message includes details such as the URL of the resource being requested, the",
+      "prompt_tokens": 1111,
+      "output_tokens": 64,
+      "total_latency_seconds": 1.3628940420021536,
+      "output_tokens_per_second": 46.95889631007637,
+      "prompt_name": "long",
+      "repeat": 2,
+      "model_id": "Qwen/Qwen2.5-0.5B-Instruct",
+      "device": "mps"
+    },
+    {
+      "text": "An HTTP request is typically initiated by the client (e.g., a web browser) making a request to a server (e.g., a web server). The client sends a request message containing information about itself and the action it wants to perform. This message includes details such as the URL of the resource being requested, the",
+      "prompt_tokens": 1111,
+      "output_tokens": 64,
+      "total_latency_seconds": 1.3566118339986133,
+      "output_tokens_per_second": 47.1763539105803,
+      "prompt_name": "long",
+      "repeat": 3,
+      "model_id": "Qwen/Qwen2.5-0.5B-Instruct",
+      "device": "mps"
+    },
+    {
+      "text": "An HTTP request is typically initiated by the client (e.g., a web browser) making a request to a server (e.g., a web server). The client sends a request message containing information about itself and the action it wants to perform. This message includes details such as the URL of the resource being requested, the",
+      "prompt_tokens": 1111,
+      "output_tokens": 64,
+      "total_latency_seconds": 1.3549689169994963,
+      "output_tokens_per_second": 47.23355583811063,
+      "prompt_name": "long",
+      "repeat": 4,
+      "model_id": "Qwen/Qwen2.5-0.5B-Instruct",
+      "device": "mps"
+    },
+    {
+      "text": "An HTTP request is typically initiated by the client (e.g., a web browser) making a request to a server (e.g., a web server). The client sends a request message containing information about itself and the action it wants to perform. This message includes details such as the URL of the resource being requested, the",
+      "prompt_tokens": 1111,
+      "output_tokens": 64,
+      "total_latency_seconds": 1.3583051249988785,
+      "output_tokens_per_second": 47.11754290115989,
+      "prompt_name": "long",
+      "repeat": 5,
+      "model_id": "Qwen/Qwen2.5-0.5B-Instruct",
+      "device": "mps"
+    }
+  ]
+}
