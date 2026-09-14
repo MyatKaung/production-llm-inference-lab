@@ -45,6 +45,16 @@ First write a hypothesis such as: “decode time will grow with output tokens, w
 
 `baseline.json`, model-memory notes, launch command, smoke test, and request-to-token sequence diagram.
 
+## Guided notebooks
+
+Run these in order:
+
+1. `practical-baseline.ipynb` — tokenizer/template inspection, deterministic generation, streaming smoke test, and repeated end-to-end baseline.
+2. `01-prefill-decode-deep-dive.ipynb` — manually separates a forward-pass prefill from cached token-by-token decode, then compares short and long prompts.
+3. `streaming-and-missing-metrics.ipynb` — records TTFT and inter-token latency from actual streamed tokens.
+
+The deep-dive notebook is original material for this lab. It names the Class 1 and reading-plan concepts it builds on in [`../NOTEBOOK-SOURCES.md`](../NOTEBOOK-SOURCES.md).
+
 ## Done when
 
 - [ ] One command starts the server.

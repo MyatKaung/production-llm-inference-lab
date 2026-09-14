@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Week 1.2 — Chat templates and tokens</title><link rel="stylesheet" href="../assets/style.css"></head><body>
+<p><a href="00-course-map.html">Course map</a> / Week 1.2</p><h1>Turn a chat message into model input</h1>
+<p><strong>Goal:</strong> see why the model receives token IDs and chat-control tokens, not your raw sentence.</p>
+<h2>Run these notebook cells</h2><p>In <code>practical-baseline.ipynb</code>, run the model/tokenizer load cell, then the “Inspect the two representations” cell. It contains:</p><pre>messages = [{'role': 'user', 'content': 'Explain caching in one sentence.'}]
+rendered = tokenizer.apply_chat_template(messages, add_generation_prompt=True, tokenize=False)
+encoded = tokenizer.apply_chat_template(messages, add_generation_prompt=True, tokenize=True, return_dict=True, return_tensors='pt')</pre>
+<h2>Worked example</h2><p>Your visible message is only <code>Explain caching in one sentence.</code>. The chat template adds model-specific role markers and an assistant-generation marker. Then tokenization converts that rendered text into numeric IDs:</p><pre>visible text → chat-formatted text → input_ids + attention_mask
+"Explain caching…" → "&lt;system/user markers…&gt;" → [151644, …]</pre>
+<p><code>input_ids</code> are the model’s vocabulary indexes. <code>attention_mask</code> marks real tokens with 1 and padding tokens with 0. With one unpadded prompt it is normally all 1s.</p>
+<h2>Practical experiment</h2><pre># Change only this line, then rerun the inspection cell:
+messages = [{'role': 'user', 'content': 'Explain KV cache in one sentence.'}]</pre>
+<div class="card"><p>Compare the two runs:</p><ol><li>Did the rendered template keep the same role/generation structure?</li><li>Did <code>input_ids</code> change?</li><li>Did the token count equal the number of visible characters? Why not?</li></ol></div>
+<details><summary>Expected reasoning</summary><p>Template structure should stay similar, token IDs change with text, and tokens are learned subword units—not characters or necessarily whole words.</p></details>
+</body></html>

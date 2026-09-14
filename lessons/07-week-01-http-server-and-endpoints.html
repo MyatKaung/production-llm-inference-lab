@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Week 1: One HTTP request becomes generated tokens</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <p><a href="00-course-map.html">Course map</a> / Week 1.7</p>
+  <h1>Expose the model through HTTP endpoints</h1>
+  <p>Goal: understand exactly what happened when we called the Week 1 server with “Explain caching in one sentence.”</p>
+
+  <h2>Run this practical check</h2>
+  <pre>cd /Users/myatkaung/Desktop/production-llm-inference-lab
+source .venv/bin/activate
+uvicorn server:app --app-dir week-01-baseline-server --host 127.0.0.1 --port 8001</pre>
+  <p>In another terminal, call <code>GET /health</code>, then <code>POST /generate</code>, then <code>POST /generate/stream</code>. Finally run <code>pytest week-01-baseline-server/tests/test_server.py -q</code>. Stop the server with <code>Ctrl+C</code> after the checks.</p>
+
+  <h2>The whole path</h2>
+  <div class="card flow">
+    <span class="node">curl client</span><span class="arrow">→</span>
+    <span class="node">FastAPI route</span><span class="arrow">→</span>
+    <span class="node">chat template + tokenizer</span><span class="arrow">→</span>
+    <span class="node">Qwen on MPS</span><span class="arrow">→</span>
+    <span class="node">JSON or SSE</span>
+  </div>
+
+  <h2>Worked example: non-streaming</h2>
+  <p>The client sent this JSON to <code>POST /generate</code>:</p>
+  <pre>{
+  "messages": [{"role": "user", "content": "Explain caching in one sentence."}],
+  "max_new_tokens": 16
+}</pre>
+  <ol>
+    <li><strong>FastAPI validates the request.</strong> It accepts one non-empty message and a positive <code>max_new_tokens</code>. An empty <code>messages</code> list was rejected with HTTP 422 in our real test.</li>
+    <li><strong><code>get_engine()</code> obtains one model engine.</strong> On the first request it constructs <code>InferenceEngine</code>, loading the tokenizer and Qwen model onto MPS. Later requests reuse it: model load is not repeated.</li>
+    <li><strong><code>make_inputs()</code> formats the chat then tokenizes it.</strong> The model does not receive the raw English sentence. <code>apply_chat_template(...)</code> adds Qwen’s required chat markers, then produces token IDs and an attention mask. In our run, this request became <strong>36 prompt tokens</strong>.</li>
+    <li><strong><code>model.generate()</code> runs two phases.</strong> Prefill processes all 36 input tokens and builds the attention/KV state. Decode then predicts one new token at a time, using that cached state. Greedy decoding is used here because <code>do_sample=False</code>.</li>
+    <li><strong>The server removes the input tokens.</strong> <code>generate()</code> returns the prompt plus newly generated tokens. The slice <code>output[0, prompt_tokens:]</code> keeps only the completion; decoding those IDs makes readable text.</li>
+    <li><strong>FastAPI returns one JSON object.</strong> The live response produced 16 output tokens in about 1.69 seconds of measured generation time, roughly 9.49 effective output tokens/sec. The model-load time occurred before that timer, so it must be measured separately as cold-start time.</li>
+  </ol>
+
+  <h2>The same request, streamed</h2>
+  <p><code>POST /generate/stream</code> follows the same tokenization and model steps, but it changes how results leave the model:</p>
+  <ol>
+    <li><code>TokenQueueStreamer</code> is passed to <code>model.generate()</code>.</li>
+    <li>The model invokes the streamer’s <code>put()</code> as it produces token IDs. The first call contains prompt IDs, so <code>skip_prompt</code> drops it.</li>
+    <li>A background thread runs generation while the route reads token IDs from the queue.</li>
+    <li>Each ID is decoded and yielded as one server-sent event (SSE), such as <code>{"index": 0, "text": "C"}</code>, then <code>{"index": 1, "text": "aching"}</code>.</li>
+    <li>When generation ends, the server sends <code>data: [DONE]</code>. This tells the client that no more chunks are coming.</li>
+  </ol>
+
+  <p class="note"><strong>Why streaming feels faster:</strong> the final answer may take hundreds of milliseconds, but the UI can display the first decoded piece as soon as it arrives. That first-piece delay is <em>time to first token (TTFT)</em>.</p>
+
+  <h2>Three measurements you must not mix up</h2>
+  <div class="card">
+    <ul>
+      <li><strong>Cold start:</strong> process receives its first useful request until model/tokenizer are available. It includes model loading.</li>
+      <li><strong>TTFT:</strong> request acceptance until the first SSE token chunk. It contains request overhead plus prefill, and usually some first decode work.</li>
+      <li><strong>Total latency:</strong> request acceptance until the complete JSON response or <code>[DONE]</code>. It includes the entire decode loop.</li>
+    </ul>
+  </div>
+
+  <h2>Why the test suite matters</h2>
+  <p>The seven passing tests use a fake engine. That proves the HTTP contract—validation, JSON shape, ordered SSE events, and completion signaling—without making every test download and run Qwen. The real curl calls add the missing integration evidence: the contract and the model work together.</p>
+
+  <h2>Self-check</h2>
+  <details><summary>1. Why does the server slice generated IDs at <code>prompt_tokens</code>?</summary>
+    <p>Because <code>model.generate()</code> returns the original prompt IDs followed by new IDs. The client should see only the new completion.</p></details>
+  <details><summary>2. The first streamed pieces were “C” and “aching.” Why are they not necessarily words?</summary>
+    <p>The model generates tokenizer units, not guaranteed whole words. The server decodes each emitted token ID, so chunks can split a word.</p></details>
+  <details><summary>3. Why can’t 1.69 seconds be called cold-start time?</summary>
+    <p>The server starts its timer inside <code>InferenceEngine.generate()</code>, after lazy model loading has already occurred. It measures model generation, not load time.</p></details>
+
+  <h2>Next practical move</h2>
+  <p>In Week 2, place an OpenAI-compatible gateway in front of this server. The gateway should own public API shape, request IDs, limits, timeouts, and metrics; this Week 1 server stays the model-facing backend.</p>
+
+  <p>References: <a href="https://fastapi.tiangolo.com/advanced/stream-data/">FastAPI StreamingResponse</a>; <a href="https://huggingface.co/docs/transformers/main_classes/text_generation">Transformers generation API</a>; <a href="https://huggingface.co/docs/transformers/main/en/generation_features">Transformers streaming guide</a>.</p>
+</body>
+</html>

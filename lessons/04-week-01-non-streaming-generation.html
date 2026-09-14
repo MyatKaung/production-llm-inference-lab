@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Week 1.4 — Non-streaming generation</title><link rel="stylesheet" href="../assets/style.css"></head><body>
+<p><a href="00-course-map.html">Course map</a> / Week 1.4</p><h1>Generate a complete answer, then measure it</h1>
+<p><strong>Goal:</strong> run one deterministic generation and understand why the notebook slices prompt tokens out of the returned sequence.</p>
+<h2>Run this notebook cell</h2><p>Return to <code>practical-baseline.ipynb</code>. If the kernel was restarted, rerun its first four code cells so <code>generate_once()</code> exists; then run:</p><pre>smoke = generate_once('Explain caching in one sentence.')
+print(smoke)</pre>
+<h2>Worked example</h2><p><code>model.generate()</code> returns one sequence that contains both input and newly generated IDs:</p><pre>[ prompt token 0, prompt token 1, ... prompt token 35,
+  generated token 0, generated token 1, ... ]</pre>
+<p>This line removes the prompt:</p><pre>new_tokens = output[0, inputs['input_ids'].shape[-1]:]</pre>
+<p>If the input was 36 tokens and the model generated 16 more, the slice starts at index 36. Decoding the entire sequence would expose the prompt/chat markers instead of just the assistant answer.</p>
+<h2>Practical experiment</h2><pre># Keep generation deterministic. Change only the output cap.
+short = generate_once('Explain caching in one sentence.', max_new_tokens=8)
+long = generate_once('Explain caching in one sentence.', max_new_tokens=32)
+print(short)
+print(long)</pre>
+<div class="card"><ol><li>Record <code>prompt_tokens</code> for both runs.</li><li>Compare <code>output_tokens</code> and <code>total_latency_seconds</code>.</li><li>Did the answer stop naturally or hit your output cap?</li></ol></div>
+<details><summary>Expected reasoning</summary><p>The prompt token count should stay the same. A larger cap permits more decode steps, which can increase total latency. An answer may stop early at EOS or may be truncated by the cap.</p></details>
+</body></html>

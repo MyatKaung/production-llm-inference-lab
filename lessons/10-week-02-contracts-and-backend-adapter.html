@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Week 2: Gateway contracts and backend interface</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <p><a href="../README.md">Production LLM Inference Lab</a> / Lesson 4</p>
+  <h1>Designing the gateway’s public contract and private backend interface</h1>
+  <p>This is the bridge from understanding the gateway to implementing it. We will name the data that crosses each boundary before writing the route.</p>
+
+  <h2>One request, three representations</h2>
+  <div class="card flow">
+    <span class="node">Public client JSON<br><code>max_tokens</code></span><span class="arrow">→</span>
+    <span class="node">Gateway internal objects<br>validated + policy checked</span><span class="arrow">→</span>
+    <span class="node">Week 1 backend JSON<br><code>max_new_tokens</code></span>
+  </div>
+  <p>They may look similar, but they have different owners. The client owns the public request; the Week 1 server owns its private request. The gateway owns the translation between them.</p>
+
+  <h2>Contract 1: the public client request</h2>
+  <p>For this lab, the gateway accepts a deliberately small OpenAI-compatible subset:</p>
+  <pre>POST /v1/chat/completions
+{
+  "model": "local-qwen",
+  "messages": [
+    {"role": "system", "content": "Answer concisely."},
+    {"role": "user", "content": "Explain caching in one sentence."}
+  ],
+  "max_tokens": 16,
+  "stream": false
+}</pre>
+  <p>Its Pydantic model can say exactly what we promise to accept:</p>
+  <pre>class ChatMessage(BaseModel):
+    role: Literal["system", "user", "assistant"]
+    content: str = Field(min_length=1)
+
+class ChatCompletionRequest(BaseModel):
+    model: str = Field(min_length=1)
+    messages: list[ChatMessage] = Field(min_length=1)
+    max_tokens: int = Field(default=64, ge=1)
+    stream: bool = False</pre>
+  <p><strong>Important:</strong> the type model checks structural validity: the fields exist and have valid types. The gateway policy checks operational validity: for example, <code>max_tokens &lt;= 128</code> and the message count or input-token estimate is within the configured limit.</p>
+
+  <h2>Worked example A: structural validation versus policy validation</h2>
+  <p>These two failures sound similar but occur at different layers:</p>
+  <div class="card"><p><strong>Malformed JSON / structural failure</strong></p><pre>{"model": "local-qwen", "messages": []}</pre><p>This violates <code>Field(min_length=1)</code>. FastAPI/Pydantic responds with 422 before our route executes.</p>
+  <p><strong>Well-formed but disallowed / policy failure</strong></p><pre>{"model":"local-qwen", "messages":[{"role":"user","content":"Hi"}], "max_tokens":500}</pre><p>This parses successfully, but our gateway’s limit is 128. The route returns a designed 400-style error and does not call the backend.</p></div>
+  <p>The distinction helps users and tests: “you sent invalid JSON” is different from “your valid request violates this service’s resource policy.”</p>
+
+  <h2>Contract 2: the private backend request</h2>
+  <p>The current Week 1 server accepts this exact shape:</p>
+  <pre>POST http://127.0.0.1:8001/generate
+{
+  "messages": [
+    {"role": "system", "content": "Answer concisely."},
+    {"role": "user", "content": "Explain caching in one sentence."}
+  ],
+  "max_new_tokens": 16
+}</pre>
+  <p>Notice the differences: it does not accept the public <code>model</code> field, calls the token limit <code>max_new_tokens</code>, and does not know whether the original client asked for streaming.</p>
+  <pre>class BackendGenerateRequest(BaseModel):
+    messages: list[ChatMessage]
+    max_new_tokens: int</pre>
+
+  <h2>Worked example B: explicit translation</h2>
+  <p>The translation should be a small function with no network work inside it:</p>
+  <pre>def to_backend_request(public: ChatCompletionRequest) -> BackendGenerateRequest:
+    return BackendGenerateRequest(
+        messages=public.messages,
+        max_new_tokens=public.max_tokens,
+    )</pre>
+  <p>Given the public request above, the gateway removes <code>model: "local-qwen"</code> after using it to select/validate the configured backend, then renames <code>max_tokens</code> to <code>max_new_tokens</code>. This tiny function is valuable because it can be tested without HTTP or a model.</p>
+
+  <h2>Contract 3: the backend result</h2>
+  <p>The Week 1 <code>/generate</code> endpoint returns implementation-oriented fields:</p>
+  <pre>{
+  "text": "Caching stores frequently used data…",
+  "prompt_tokens": 36,
+  "output_tokens": 16,
+  "total_latency_seconds": 1.69,
+  "output_tokens_per_second": 9.49,
+  "model_id": "Qwen/Qwen2.5-0.5B-Instruct",
+  "device": "mps"
+}</pre>
+  <p>The gateway needs only a stable subset to construct the public result:</p>
+  <pre>@dataclass
+class BackendResult:
+    text: str
+    prompt_tokens: int
+    output_tokens: int
+    backend_model_id: str</pre>
+  <p>Latency and device fields are still useful—but for internal logs and metrics, not necessarily the public API. This avoids accidentally making MPS or Hugging Face part of the client contract.</p>
+
+  <h2>Worked example C: map the result to a public response</h2>
+  <pre>def to_public_response(result: BackendResult, *, request_id: str, model: str):
+    return {
+        "id": request_id,
+        "object": "chat.completion",
+        "model": model,
+        "choices": [{
+            "index": 0,
+            "message": {"role": "assistant", "content": result.text},
+            "finish_reason": "stop",
+        }],
+        "usage": {
+            "prompt_tokens": result.prompt_tokens,
+            "completion_tokens": result.output_tokens,
+            "total_tokens": result.prompt_tokens + result.output_tokens,
+        },
+    }</pre>
+  <p>If the backend returned 36 prompt tokens and 16 output tokens, the public response reports 52 total tokens. That arithmetic belongs to the mapping layer, so a fake backend can test it exactly.</p>
+
+  <h2>The backend interface: the seam that enables both fakes and future engines</h2>
+  <pre>class InferenceBackend(Protocol):
+    async def generate(self, request: BackendGenerateRequest) -> BackendResult: ...
+    async def stream(self, request: BackendGenerateRequest) -> AsyncIterator[BackendChunk]: ...</pre>
+  <p>There will be two implementations:</p>
+  <ul>
+    <li><strong>FakeBackend:</strong> returns fixed <code>BackendResult</code> objects in contract tests.</li>
+    <li><strong>HttpWeek1Backend:</strong> serializes <code>BackendGenerateRequest</code>, calls port 8001, parses the response, and turns HTTP/network failures into typed backend errors.</li>
+  </ul>
+  <p>Later, a <code>VllmBackend</code> can implement the same interface. The route and client contract stay unchanged.</p>
+
+  <h2>Worked example D: the route stays thin</h2>
+  <pre>@app.post("/v1/chat/completions")
+async def chat_completions(
+    request: ChatCompletionRequest,
+    backend: InferenceBackend = Depends(get_backend),
+):
+    enforce_limits(request)                  # no backend call if rejected
+    request_id = new_request_id()
+    internal = to_backend_request(request)   # pure translation
+    result = await backend.generate(internal)
+    return to_public_response(result, request_id=request_id, model=request.model)</pre>
+  <p>The route reads like a short policy: validate, enforce limits, translate, delegate, map. That makes it easier to test and prevents model-server details from leaking everywhere.</p>
+
+  <h2>What to test before implementation is “done”</h2>
+  <div class="card"><ol>
+    <li>Empty messages produces 422 without entering the route.</li>
+    <li><code>max_tokens=500</code> produces the policy error and fake backend calls remain empty.</li>
+    <li>A known fake result maps to correct <code>choices</code> and <code>usage.total_tokens</code>.</li>
+    <li>A fake timeout maps to the gateway’s bounded timeout error with a request ID.</li>
+    <li>The HTTP backend successfully translates one real request to port 8001.</li>
+  </ol></div>
+
+  <h2>Retrieval practice</h2>
+  <details><summary>1. Where should <code>max_tokens</code> become <code>max_new_tokens</code>, and why?</summary><p>In the gateway translation function. The name difference is a private backend detail; clients should not need to know it.</p></details>
+  <details><summary>2. Which backend fields should appear in the public response: <code>device</code>, <code>total_latency_seconds</code>, or token usage?</summary><p>Token usage is part of the useful client response. Device and implementation latency belong in internal telemetry unless the public contract explicitly promises them.</p></details>
+  <details><summary>3. What needs to change to switch from the Week 1 HTTP server to vLLM later?</summary><p>Implement a new backend adapter that obeys <code>InferenceBackend</code>; keep the public models, route, and clients stable.</p></details>
+
+  <h2>Follow-up prompt</h2>
+  <p>Given a backend result of 20 prompt tokens and 7 output tokens, write the gateway’s <code>usage</code> object. Then say which one field from the Week 1 response you would deliberately keep out of the public response, and why.</p>
+
+  <p>References: <a href="https://fastapi.tiangolo.com/tutorial/dependencies/">FastAPI dependencies</a>; <a href="https://fastapi.tiangolo.com/tutorial/testing/">FastAPI TestClient</a>; <a href="https://platform.openai.com/docs/api-reference/responses-streaming/response/refusal?lang=python">OpenAI streaming event model</a>.</p>
+</body>
+</html>

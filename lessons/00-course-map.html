@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>LLM Inference Lab course map</title><link rel="stylesheet" href="../assets/style.css"></head><body>
+<h1>Production LLM Inference Lab — guided course</h1>
+<p>This is a practical course, not a reading list. Each lesson has three parts: understand one idea, run or modify real code, then verify one observable result. Do not skip a practical check just because the explanation makes sense.</p>
+<h2>Follow this order</h2><div class="card"><ol>
+<li><a href="01-week-01-notebook-setup.html">Week 1.1 — Start the baseline notebook</a></li>
+<li><a href="02-week-01-chat-template-and-tokens.html">Week 1.2 — Chat templates and tokens</a></li>
+<li><a href="03-week-01-prefill-and-decode.html">Week 1.3 — Prefill and decode</a></li>
+<li><a href="04-week-01-non-streaming-generation.html">Week 1.4 — Non-streaming generation</a></li>
+<li><a href="05-week-01-streaming-ttft-and-itl.html">Week 1.5 — Streaming, TTFT, and inter-token latency</a></li>
+<li><a href="06-week-01-benchmark-and-evidence.html">Week 1.6 — Five-run benchmark and evidence</a></li>
+<li><a href="07-week-01-http-server-and-endpoints.html">Week 1.7 — HTTP server and endpoints</a></li>
+<li><a href="08-week-02-gateway-boundary.html">Week 2.1 — Gateway boundary</a></li>
+<li><a href="09-week-02-fake-backend-tests.html">Week 2.2 — Fake backend tests</a></li>
+<li><a href="10-week-02-contracts-and-backend-adapter.html">Week 2.3 — Contracts and backend adapter</a></li>
+<li><a href="11-week-02-real-http-backend.html">Week 2.4 — Real HTTP backend integration</a></li>
+</ol></div>
+<h2>What “complete” means</h2><p>A lesson is complete only when you have run its task, seen the stated output, and answered its check in your own words. The notebooks are the source of truth for Week 1:</p><ul><li><code>week-01-baseline-server/practical-baseline.ipynb</code></li><li><code>week-01-baseline-server/streaming-and-missing-metrics.ipynb</code></li></ul>
+<p class="note">Week 1 teaches one local model path. Week 2 wraps the same path in a gateway. We do not introduce batching, vLLM, or Kubernetes until these steps are understood and verified.</p>
+<h2>Runnable notebook sequence</h2><div class="card"><ul>
+<li><a href="../week-01-baseline-server/practical-baseline.ipynb">Week 1 baseline notebook</a></li>
+<li><a href="../week-01-baseline-server/01-prefill-decode-deep-dive.ipynb">Week 1 prefill/decode deep dive</a></li>
+<li><a href="../week-01-baseline-server/streaming-and-missing-metrics.ipynb">Week 1 streaming metrics notebook</a></li>
+<li><a href="../week-02-inference-gateway/01-gateway-contracts-and-fake-backend.ipynb">Week 2 gateway contracts and fake-backend lab</a></li>
+<li><a href="../week-02-inference-gateway/02-real-week1-http-backend.ipynb">Week 2 gateway and real Week 1 HTTP backend lab</a></li>
+</ul></div>
+</body></html>

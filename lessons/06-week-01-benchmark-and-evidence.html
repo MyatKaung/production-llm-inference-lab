@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Week 1.6 — Benchmark and evidence</title><link rel="stylesheet" href="../assets/style.css"></head><body>
+<p><a href="00-course-map.html">Course map</a> / Week 1.6</p><h1>Run repeated measurements and save evidence</h1>
+<p><strong>Goal:</strong> learn why one fast-looking answer is not a benchmark. You will run the fixed prompt set repeatedly, then inspect the JSON evidence the notebook writes.</p>
+<h2>Run this now</h2><p>Return to <code>practical-baseline.ipynb</code>. Run the final two cells: the prompt loop and the JSON export.</p><pre>prompts = {
+    'short': 'Explain caching in one sentence.',
+    'medium': 'Explain how an HTTP request becomes generated tokens in 150 words.',
+    'long': ('Explain how an HTTP request becomes generated tokens. ' * 120),
+}
+
+# The notebook does 1 warm-up and 5 measured runs for each prompt.</pre>
+<h2>Worked example</h2><p>For each prompt class, the notebook first warms the model up, then saves five rows with input tokens, output tokens, total latency, and effective output-token rate. A warm-up is excluded because first-use work can distort the steady-state comparison.</p>
+<pre>result row = {
+  "prompt_name": "long",
+  "repeat": 3,
+  "prompt_tokens": 1111,
+  "output_tokens": 64,
+  "total_latency_seconds": 1.36
+}</pre>
+<h2>Practical check</h2><pre># After the export cell finishes, inspect the saved result:
+python -m json.tool week-01-baseline-server/baseline.json | head -80</pre>
+<div class="card"><ol><li>Confirm there are five measured rows each for <code>short</code>, <code>medium</code>, and <code>long</code>.</li><li>Find the long prompt’s input-token count.</li><li>Compare its total latency with the short prompt’s latency.</li><li>State one careful conclusion and one thing this file does not prove.</li></ol></div>
+<p class="note">Careful conclusion: longer input was associated with higher end-to-end latency in this fixed setup. Not proven: pure prefill time, queue time, or a universal performance claim across hardware.</p>
+<details><summary>Why save JSON instead of only notebook output?</summary><p>Notebook screens are hard to compare or reproduce. Machine-readable JSON can later become plots, tables, and before/after optimization evidence.</p></details>
+</body></html>

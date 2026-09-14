@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Week 2: Fake backend tests</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <p><a href="../README.md">Production LLM Inference Lab</a> / Lesson 3</p>
+  <h1>Why a fake backend makes the gateway testable</h1>
+  <p>Your gateway has two responsibilities at once: accept a public client request, then call an internal model server. A fake backend replaces only the second part during most tests. It lets us control exactly what the model server does.</p>
+
+  <h2>Real backend versus fake backend</h2>
+  <div class="card">
+    <p><strong>Real backend:</strong> the Week 1 server at <code>:8001</code>, which loads Qwen, depends on MPS, and generates wording at variable speed.</p>
+    <p><strong>Fake backend:</strong> a tiny in-memory object used only by tests. It can return a fixed answer immediately, throw a timeout on demand, yield known chunks, or return a 500 error.</p>
+  </div>
+  <p>The gateway is the thing under test. We want a failed test to mean “the gateway translated, validated, or handled an error incorrectly”—not “the laptop was busy” or “the model took longer today.”</p>
+
+  <h2>Why this matters</h2>
+  <ul>
+    <li><strong>Fast:</strong> hundreds of gateway contract tests can run in seconds, without model load or GPU work.</li>
+    <li><strong>Deterministic:</strong> a fake always returns the same token count and text, so expected assertions are unambiguous.</li>
+    <li><strong>Complete failure coverage:</strong> timeouts, 500s, malformed replies, and cancellation are difficult and expensive to force in a real model server, but trivial to simulate.</li>
+    <li><strong>Safe design pressure:</strong> to replace the backend, the gateway must depend on a small backend interface rather than hard-coding HTTP calls everywhere.</li>
+  </ul>
+
+  <h2>The small interface we want</h2>
+  <p>Think of the gateway as depending on this behavior, not directly on Qwen:</p>
+  <pre>class Backend:
+    async def generate(self, request) -> BackendResult: ...
+    async def stream(self, request) -> AsyncIterator[BackendChunk]: ...</pre>
+  <p>The production implementation later translates this to HTTP calls to <code>:8001</code>. The fake implementation returns controlled values in memory. Both obey the same interface, so the gateway does not care which one it received.</p>
+
+  <h2>Worked example A: prove response translation</h2>
+  <p>Suppose the fake backend is configured to return:</p>
+  <pre>BackendResult(
+    text="Caching stores reused data.",
+    prompt_tokens=11,
+    output_tokens=5,
+    model_id="fake-qwen"
+)</pre>
+  <p>The test calls the <em>gateway</em>, not the fake directly:</p>
+  <pre>response = client.post("/v1/chat/completions", json={
+    "model": "local-qwen",
+    "messages": [{"role": "user", "content": "What is caching?"}],
+    "max_tokens": 16
+})
+
+assert response.status_code == 200
+assert response.json()["choices"][0]["message"]["content"] == "Caching stores reused data."
+assert response.json()["usage"] == {
+    "prompt_tokens": 11,
+    "completion_tokens": 5,
+}
+</pre>
+  <p><strong>What this proves:</strong> the gateway correctly mapped its public request to the backend call, then wrapped the known backend result into the public chat-completion response. It does <em>not</em> prove Qwen quality or MPS speed. Those are separate integration concerns.</p>
+
+  <h2>Worked example B: prove a bad client request never reaches the backend</h2>
+  <p>Set the gateway policy to allow at most 128 output tokens. The client asks for 500:</p>
+  <pre>response = client.post("/v1/chat/completions", json={
+    "model": "local-qwen",
+    "messages": [{"role": "user", "content": "Hello"}],
+    "max_tokens": 500
+})
+
+assert response.status_code == 400
+assert fake_backend.calls == []</pre>
+  <p><strong>Why a fake helps:</strong> it can keep a <code>calls</code> list. The assertion proves a crucial capacity rule: invalid work was rejected before it reached the model. With a real backend, you might see a 400 but still not know whether the model server was contacted.</p>
+
+  <h2>Worked example C: force a timeout without waiting 30 seconds</h2>
+  <p>A real timeout test is slow and may be flaky. Instead configure the fake to raise the same timeout exception immediately:</p>
+  <pre>class TimeoutBackend:
+    async def generate(self, request):
+        raise BackendTimeout("simulated timeout")
+
+response = client.post("/v1/chat/completions", json=valid_request)
+
+assert response.status_code == 504
+assert response.json()["error"]["type"] == "backend_timeout"
+assert "request_id" in response.json()["error"]</pre>
+  <p><strong>What this proves:</strong> a dependency failure becomes a stable client response, includes correlation information, and increments the timeout metric. It does not mean the actual network timeout is configured correctly; that becomes one targeted integration test later.</p>
+
+  <h2>Worked example D: prove ordered streaming translation</h2>
+  <p>The fake stream yields fixed chunks:</p>
+  <pre>async def stream(self, request):
+    yield BackendChunk(text="C")
+    yield BackendChunk(text="aching")
+    yield BackendDone()</pre>
+  <p>The gateway test consumes its SSE response and asserts:</p>
+  <pre>assert events == [
+    {"delta": {"content": "C"}},
+    {"delta": {"content": "aching"}},
+    "[DONE]",
+]</pre>
+  <p><strong>What this proves:</strong> the gateway did not reorder, buffer, or lose chunks, and it sent a terminal completion marker. We choose split-word chunks deliberately because real tokenizers do not always produce whole words.</p>
+
+  <h2>The two-layer testing strategy</h2>
+  <div class="card"><ol>
+    <li><strong>Contract tests with a fake backend:</strong> many fast tests for validation, response shape, errors, metrics, and streaming. These explain whether the gateway itself is correct.</li>
+    <li><strong>Integration tests with the real Week 1 server:</strong> a few slower tests for actual HTTP translation, model loading, and real SSE delivery. These explain whether the two components work together.</li>
+  </ol></div>
+  <p>Neither layer replaces the other. Fakes give precise diagnosis; the real server gives confidence that the wiring exists.</p>
+
+  <h2>How FastAPI and pytest support this</h2>
+  <p>FastAPI supports replacing dependencies during tests, so a route can receive the fake instead of the production backend. pytest’s <code>monkeypatch</code> can also safely replace a network-facing object for one test, automatically undoing it afterward. Prefer an explicit backend dependency when you control the code; it makes the seam obvious.</p>
+
+  <h2>Retrieval practice</h2>
+  <details><summary>1. If every fake-backend test passes, what has not yet been proven?</summary><p>That the gateway can actually communicate with the Week 1 HTTP server and Qwen. That requires the smaller real integration suite.</p></details>
+  <details><summary>2. Why assert <code>fake_backend.calls == []</code> for an over-limit request?</summary><p>It proves the gateway rejected invalid work before it consumed backend/model capacity, not merely that it eventually returned an error.</p></details>
+  <details><summary>3. Why simulate a timeout immediately instead of sleeping for the production deadline?</summary><p>The test remains fast and deterministic while still proving the gateway’s timeout mapping. One later integration test checks the actual configured deadline.</p></details>
+
+  <h2>Follow-up prompt</h2>
+  <p>For the request <code>max_tokens: 500</code> with a gateway limit of 128, what two things should the test assert, and why?</p>
+
+  <p>References: <a href="https://fastapi.tiangolo.com/advanced/testing-dependencies/">FastAPI dependency overrides</a>; <a href="https://fastapi.tiangolo.com/tutorial/testing/">FastAPI TestClient</a>; <a href="https://docs.pytest.org/en/stable/how-to/monkeypatch.html">pytest monkeypatch</a>.</p>
+</body>
+</html>

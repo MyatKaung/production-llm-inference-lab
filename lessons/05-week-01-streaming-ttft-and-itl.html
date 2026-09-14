@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Week 1.5 — Streaming, TTFT, and ITL</title><link rel="stylesheet" href="../assets/style.css"></head><body>
+<p><a href="00-course-map.html">Course map</a> / Week 1.5</p><h1>Stream tokens and measure when they arrive</h1>
+<p><strong>Goal:</strong> turn prefill/decode into observable timing data. This is the practical step that follows the prefill/decode explanation.</p>
+<h2>Open the second Week 1 notebook</h2><pre>cd /Users/myatkaung/Desktop/production-llm-inference-lab
+source .venv/bin/activate
+jupyter notebook week-01-baseline-server/streaming-and-missing-metrics.ipynb</pre>
+<p>Run its first three <strong>code</strong> cells. The third defines <code>stream_with_timings()</code>, starts <code>model.generate()</code> in a background thread, and pulls events from <code>TokenTimingStreamer</code>.</p>
+<h2>Worked example</h2><pre>started = time.perf_counter()
+thread = threading.Thread(target=model.generate, kwargs=kwargs)
+thread.start()
+for event in streamer:
+    token_events.append(event)  # ("token", token_id, timestamp)</pre>
+<p>The first event timestamp minus <code>started</code> is <strong>TTFT</strong>. The gaps between later events are <strong>inter-token latency (ITL)</strong>.</p>
+<pre>TTFT = first_token_time - request_start
+ITL[0] = second_token_time - first_token_time
+total latency = generation_finished - request_start</pre>
+<h2>Practical experiment</h2><p>Run the provided smoke test:</p><pre>stream_result = stream_with_timings('Explain prefill and decode in simple terms.')
+print(stream_result['ttft_seconds'])
+print(stream_result['inter_token_latency_seconds'][:5])</pre>
+<div class="card"><ol><li>Find the first emitted text fragment in the notebook output.</li><li>Record TTFT.</li><li>Record the first three ITL values.</li><li>Explain why TTFT includes prefill but the later ITL values mainly reflect decode.</li></ol></div>
+<details><summary>Expected reasoning</summary><p>No token can be emitted until prompt processing and first-token prediction finish. Each later event is another decode iteration using the existing KV cache.</p></details>
+</body></html>

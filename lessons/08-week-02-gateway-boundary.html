@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Week 2: The inference gateway</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <p><a href="../README.md">Production LLM Inference Lab</a> / Lesson 2</p>
+  <h1>The inference gateway: one public API, many private details</h1>
+  <p>Your next learning target is the gateway. It is the boundary that lets clients use one stable API even if the model server, model, or serving framework changes later.</p>
+
+  <h2>The problem it solves</h2>
+  <p>Right now a client can call the Week 1 model server directly at <code>:8001/generate</code>. That makes the client depend on private details: <code>max_new_tokens</code>, the internal message shape, the Qwen model, and its response fields. Replacing Hugging Face with vLLM would force every client to change.</p>
+  <div class="card flow">
+    <span class="node">Client</span><span class="arrow">→</span>
+    <span class="node">Gateway :8000<br>stable public contract</span><span class="arrow">→</span>
+    <span class="node">Week 1 server :8001<br>private backend contract</span><span class="arrow">→</span>
+    <span class="node">Qwen</span>
+  </div>
+  <p>After Week 2, the client never knows that port <code>8001</code> exists.</p>
+
+  <h2>The gateway’s five jobs</h2>
+  <div class="card"><ol>
+    <li><strong>Validate:</strong> reject malformed requests and unsafe token limits before they consume model capacity.</li>
+    <li><strong>Translate:</strong> convert the public chat request into the internal backend request, then map the backend result back to the public shape.</li>
+    <li><strong>Protect:</strong> apply a deadline and turn backend failures into predictable client errors.</li>
+    <li><strong>Observe:</strong> create a request ID and record metrics such as duration, tokens, errors, and in-flight requests.</li>
+    <li><strong>Stream:</strong> relay ordered output chunks without buffering the entire answer.</li>
+  </ol></div>
+
+  <h2>Worked example A: a successful non-streaming chat</h2>
+  <p>A client calls only the gateway:</p>
+  <pre>POST http://127.0.0.1:8000/v1/chat/completions
+{
+  "model": "local-qwen",
+  "messages": [{"role": "user", "content": "Explain caching in one sentence."}],
+  "max_tokens": 16,
+  "stream": false
+}</pre>
+  <p>Trace it step by step:</p>
+  <ol>
+    <li><strong>Assign an ID.</strong> Gateway generates <code>req_8f31</code>. Every log line and failure for this request gets this ID.</li>
+    <li><strong>Validate locally.</strong> Ensure <code>messages</code> is non-empty and <code>max_tokens=16</code> is at or below the gateway policy. If it is invalid, do not call port 8001.</li>
+    <li><strong>Translate to the private contract.</strong> The Week 1 server expects a different field name and has no public <code>model</code> selector:
+      <pre>POST http://127.0.0.1:8001/generate
+{
+  "messages": [{"role": "user", "content": "Explain caching in one sentence."}],
+  "max_new_tokens": 16
+}</pre>
+    </li>
+    <li><strong>Set a deadline.</strong> For example, the gateway may give the backend 30 seconds. The client does not wait forever if the backend stalls.</li>
+    <li><strong>Receive the Week 1 response.</strong> It contains private implementation information such as <code>device: "mps"</code> and <code>output_tokens</code>.</li>
+    <li><strong>Return a stable public response.</strong> The gateway maps the text into a chat-completion choice and returns the request ID. A simplified result looks like:
+      <pre>{
+  "id": "req_8f31",
+  "object": "chat.completion",
+  "model": "local-qwen",
+  "choices": [{
+    "index": 0,
+    "message": {"role": "assistant", "content": "Caching stores frequently used data…"},
+    "finish_reason": "stop"
+  }],
+  "usage": {"prompt_tokens": 36, "completion_tokens": 16}
+}</pre>
+    </li>
+    <li><strong>Emit evidence.</strong> Increment successful-request and token counters; observe duration. The request ID lets you connect this metric and its logs to one user-visible response.</li>
+  </ol>
+
+  <h2>Worked example B: backend timeout</h2>
+  <p>Same client request, but the model server stops responding.</p>
+  <ol>
+    <li>Validation has passed, so the gateway begins the backend request and starts its 30-second timer.</li>
+    <li>At 30 seconds, the HTTP client raises a timeout. The gateway does <em>not</em> return a Python traceback and does <em>not</em> keep the client waiting.</li>
+    <li>It increments <code>backend_errors_total{kind="timeout"}</code>, records the final duration, and returns a bounded gateway error. For example:
+      <pre>HTTP/1.1 504 Gateway Timeout
+{
+  "error": {
+    "message": "The model backend did not respond before the deadline.",
+    "type": "backend_timeout",
+    "request_id": "req_8f31"
+  }
+}</pre>
+    </li>
+    <li>Now the client can safely retry or show a useful message. An operator can search <code>req_8f31</code> to find the corresponding backend attempt.</li>
+  </ol>
+  <p class="note">The exact error schema is our project decision. The essential principle is stable, explicit behavior. FastAPI supports raising HTTP exceptions to terminate an invalid or failed request with a defined status and JSON-able detail.</p>
+
+  <h2>Worked example C: streaming through the gateway</h2>
+  <p>When <code>stream: true</code>, the gateway sends an internal request to <code>/generate/stream</code>. It must relay chunks as they arrive:</p>
+  <pre>backend SSE:  data: {"index": 0, "text": "C"}
+gateway SSE:  data: {"id":"req_8f31","choices":[{"delta":{"content":"C"}}]}
+
+backend SSE:  data: {"index": 1, "text": "aching"}
+gateway SSE:  data: {"id":"req_8f31","choices":[{"delta":{"content":"aching"}}]}
+
+backend SSE:  data: [DONE]
+gateway SSE:  data: [DONE]</pre>
+  <p>The gateway changes the <em>shape</em>, but it must preserve <em>order</em> and completion. It should also stop its backend work if the client disconnects; otherwise invisible work continues to occupy the model.</p>
+
+  <h2>Why test with a fake backend first?</h2>
+  <p>Gateway tests should not depend on model download time, MPS performance, or generated wording. A fake backend can deliberately return a success, a delayed response, a 500 error, or known SSE chunks. That lets you prove the gateway’s contract deterministically. Then one real integration test proves that its translator works with the Week 1 server.</p>
+
+  <h2>Build order for this lab</h2>
+  <div class="card"><ol>
+    <li>Write the public request and response models.</li>
+    <li>Write contract tests against a fake backend: success, streaming, invalid request, token-limit rejection, timeout, and backend 500.</li>
+    <li>Implement the smallest non-streaming translator until its tests pass.</li>
+    <li>Add streaming relay and cancellation behavior.</li>
+    <li>Add request IDs and minimal metrics.</li>
+    <li>Start the Week 1 server, then run one real non-streaming and one real streaming gateway test.</li>
+  </ol></div>
+
+  <h2>Retrieval practice</h2>
+  <details><summary>1. If the gateway changes <code>max_tokens</code> into <code>max_new_tokens</code>, which layer owns that translation?</summary><p>The gateway. The client should only know the public contract; the model server should only receive its internal contract.</p></details>
+  <details><summary>2. Why is a timeout an API behavior, not merely an implementation detail?</summary><p>Without a deadline, clients cannot know when to recover and capacity can be held indefinitely. A defined timeout gives predictable failure behavior and measurable operational evidence.</p></details>
+  <details><summary>3. In a streamed response, what must be preserved when mapping backend events?</summary><p>Ordering, the text content, completion signaling, and cancellation handling. The public event structure may differ from the backend’s.</p></details>
+
+  <h2>Follow-up prompt</h2>
+  <p>Before implementation, explain in your own words: <em>Why should the client not call port 8001 directly?</em> I’ll use your answer to choose whether we next build the fake backend or review request/response models.</p>
+
+  <p>References: <a href="https://fastapi.tiangolo.com/advanced/stream-data/">FastAPI StreamingResponse</a>; <a href="https://fastapi.tiangolo.com/tutorial/handling-errors/">FastAPI error handling</a>; <a href="https://platform.openai.com/docs/api-reference/responses-streaming/response/refusal?lang=python">OpenAI streaming events</a>.</p>
+</body>
+</html>

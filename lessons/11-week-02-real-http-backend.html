@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Week 2: Real HTTP backend integration</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <p><a href="00-course-map.html">Course map</a> / Week 2.4</p>
+  <h1>Use the real Week 1 Qwen server behind the gateway</h1>
+  <p>The fake backend taught us whether the gateway contract is correct. This lesson checks a different claim: can that same contract successfully reach a real model server over HTTP and relay its result without exposing port 8001 to the client?</p>
+
+  <h2>The two processes</h2>
+  <div class="card flow">
+    <span class="node">Notebook client<br><code>/v1/chat/completions</code></span><span class="arrow">→</span>
+    <span class="node">Gateway app<br>public contract + translation</span><span class="arrow">→</span>
+    <span class="node">Week 1 server :8001<br><code>/generate</code>, <code>/generate/stream</code></span>
+  </div>
+  <p>Only the gateway knows that the backend happens to be on port 8001. The notebook client uses the gateway's public endpoint.</p>
+
+  <h2>Practical 1: start the actual backend</h2>
+  <p>Open a second terminal and leave this process running:</p>
+  <pre>cd /Users/myatkaung/Desktop/production-llm-inference-lab
+source .venv/bin/activate
+uvicorn server:app --app-dir week-01-baseline-server --host 127.0.0.1 --port 8001</pre>
+  <p>Then open and run <a href="../week-02-inference-gateway/02-real-week1-http-backend.ipynb"><code>02-real-week1-http-backend.ipynb</code></a> top to bottom. Its first code cell checks:</p>
+  <pre>GET http://127.0.0.1:8001/health
+→ {"status": "ok", ...}</pre>
+  <p>If this fails, stop here. You are debugging the Week 1 server, not the gateway.</p>
+
+  <h2>Worked example A: a real non-streaming request</h2>
+  <p>The client sends the stable public request:</p>
+  <pre>POST /v1/chat/completions
+{"model":"local-qwen", "messages":[{"role":"user","content":"Explain caching in one sentence."}], "max_tokens":16}</pre>
+  <p>The gateway's <code>HttpWeek1Backend</code> translates it to the Week 1 private request:</p>
+  <pre>POST http://127.0.0.1:8001/generate
+{"messages":[{"role":"user","content":"Explain caching in one sentence."}], "max_new_tokens":16}</pre>
+  <p>The real Qwen response is parsed and mapped back to a public response. Your generated wording will vary, but the shape must include a gateway request ID, one assistant message, and token usage:</p>
+  <pre>{
+  "id": "req_...",
+  "object": "chat.completion",
+  "model": "local-qwen",
+  "choices": [{"message": {"role": "assistant", "content": "..."}}],
+  "usage": {"prompt_tokens": 36, "completion_tokens": 16, "total_tokens": 52}
+}</pre>
+  <p>Notice that the public response does not reveal <code>Qwen/Qwen2.5-0.5B-Instruct</code>, MPS, or port 8001.</p>
+
+  <h2>Worked example B: actual streaming SSE</h2>
+  <p>Set <code>"stream": true</code>. The gateway now calls <code>/generate/stream</code>, reads each backend SSE <code>data:</code> line, and emits a separate public SSE delta:</p>
+  <pre>data: {"id":"req_...","choices":[{"delta":{"content":"Caching"}}]}
+
+data: {"id":"req_...","choices":[{"delta":{"content":" is"}}]}
+
+data: [DONE]</pre>
+  <p>The notebook parses those events, asserts that there is text, and asserts that the final event is <code>[DONE]</code>. This is meaningful because the chunks came from the real model server—not a predetermined test list.</p>
+
+  <h2>What this proves—and what it does not</h2>
+  <div class="card"><p><strong>Proves:</strong> the HTTP adapter can translate request fields, make a real model-server request, map a real result, and relay real streaming output through the stable gateway endpoint.</p>
+  <p><strong>Does not yet prove:</strong> production load handling, cancellation propagation, overload protection, backend 5xx mapping, or metrics. Those are the next gateway exercises.</p></div>
+
+  <h2>Retrieval check</h2>
+  <details><summary>If port 8001 changes to a vLLM server later, which code should change?</summary><p>Replace or reconfigure the backend adapter. The public gateway route and client request should remain unchanged.</p></details>
+  <details><summary>Why keep the fake-backend notebook after this real test exists?</summary><p>It makes edge cases deterministic and fast. Use it for exact policy and error tests; use the real integration notebook to prove the adapter and server work together.</p></details>
+</body>
+</html>

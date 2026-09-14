@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Week 1.1 — Notebook setup</title><link rel="stylesheet" href="../assets/style.css"></head><body>
+<p><a href="00-course-map.html">Course map</a> / Week 1.1</p><h1>Start the Week 1 baseline notebook</h1>
+<p><strong>Goal:</strong> run the actual notebook that loads the model. Before learning prefill or streaming, verify that the environment, device, tokenizer, and model work together.</p>
+<h2>What this notebook is</h2><p><code>practical-baseline.ipynb</code> is a controlled baseline for <code>Qwen/Qwen2.5-0.5B-Instruct</code>. It uses MPS on this Mac when available, otherwise CUDA or CPU. The notebook is not a production server; it is the simplest place to observe the model directly.</p>
+<h2>Run this now</h2><pre>cd /Users/myatkaung/Desktop/production-llm-inference-lab
+source .venv/bin/activate
+jupyter notebook week-01-baseline-server/practical-baseline.ipynb</pre>
+<p>Select the project Python 3.12 kernel. Run only the first <strong>code</strong> cell (the environment/device cell).</p>
+<pre>print({'python': platform.python_version(),
+       'torch': torch.__version__,
+       'transformers': transformers.__version__,
+       'device': DEVICE})</pre>
+<h2>Worked example</h2><p>On this Mac the expected device is <code>mps</code>. That means PyTorch sends tensor operations to Apple’s Metal backend. It does not mean this is CUDA: CUDA requires an NVIDIA GPU.</p>
+<h2>Practical check</h2><div class="card"><ol><li>Run the first cell.</li><li>Copy the printed <code>device</code> value.</li><li>Tell me whether it is <code>mps</code>, <code>cuda</code>, or <code>cpu</code>, and why that matters for interpreting benchmark results.</li></ol></div>
+<details><summary>Expected reasoning</summary><p>Benchmark numbers depend on hardware and runtime. A result on MPS cannot be directly compared with a CUDA GPU result without recording the device and settings.</p></details>
+</body></html>

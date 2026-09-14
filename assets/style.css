@@ -1,0 +1,9 @@
+:root { color-scheme: dark; font-family: Inter, ui-sans-serif, system-ui, sans-serif; background: #0b1020; color: #e9edf7; }
+body { max-width: 900px; margin: 0 auto; padding: 40px 22px 70px; line-height: 1.6; }
+h1, h2 { line-height: 1.2; } h1 { color: #8ad7ff; } h2 { margin-top: 2em; color: #c9a7ff; }
+.card, pre { background: #151c31; border: 1px solid #293655; border-radius: 12px; padding: 18px; overflow-x: auto; }
+.flow { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; font-weight: 650; }
+.node { padding: 8px 12px; border-radius: 8px; background: #233252; } .arrow { color: #8ad7ff; }
+code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; color: #b9e7ff; } a { color: #8ad7ff; }
+details { margin: 12px 0; background: #151c31; border-radius: 10px; padding: 12px; } summary { cursor: pointer; font-weight: 700; }
+.note { border-left: 4px solid #f2c96d; padding-left: 14px; } li { margin: 7px 0; }

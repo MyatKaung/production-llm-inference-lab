@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Week 1: Prefill and decode</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <p><a href="00-course-map.html">Course map</a> / Week 1.3</p>
+  <h1>Prefill and decode: the two phases inside every answer</h1>
+  <p><strong>Short answer to your question:</strong> prefill and decode are not “after Week 1.” They occur every time an autoregressive LLM generates text. Week 1 is where we first make them visible with one local model, fixed prompts, and latency measurements. Later weeks optimize the same two phases at larger scale.</p>
+
+  <h2>Practical task before reading on</h2>
+  <p>Open <code>week-01-baseline-server/practical-baseline.ipynb</code> and run these four <strong>code</strong> cells in order: environment/device, tokenizer/model load, chat-template inspection, and the cell that defines <code>make_inputs()</code> plus <code>generate_once()</code>. Then run this existing smoke test:</p>
+  <pre>smoke = generate_once('Explain caching in one sentence.')
+print(smoke['prompt_tokens'], smoke['output_tokens'], smoke['text'])</pre>
+  <p>Do not change the model, device, or sampling settings yet. Your job is to observe one prompt becoming input tokens and one completion becoming output tokens.</p>
+
+  <h2>Start with the exact Week 1 request</h2>
+  <pre>POST /generate
+{
+  "messages": [{"role": "user", "content": "Explain caching in one sentence."}],
+  "max_new_tokens": 16
+}</pre>
+  <p>After the Qwen chat template is added, the request is not one sentence anymore from the model’s perspective. It becomes a sequence of token IDs—including role markers and generation markers. Our actual short-prompt run contained <strong>36 input tokens</strong>.</p>
+
+  <h2>Phase 1: prefill</h2>
+  <div class="card flow">
+    <span class="node">36 prompt tokens</span><span class="arrow">→</span>
+    <span class="node">one forward pass over the prompt</span><span class="arrow">→</span>
+    <span class="node">KV cache for those positions</span><span class="arrow">→</span>
+    <span class="node">logits for the first answer token</span>
+  </div>
+  <p><strong>Prefill</strong> means “read the whole prompt and prepare context.” The transformer processes the input positions and produces key/value (KV) states for every layer and token position. Those states are saved in the KV cache.</p>
+  <p>Think of reading a question before replying. You need to take in all of it before you can write the first word. A longer prompt means more initial reading work, which usually increases time to first token (TTFT).</p>
+
+  <h2>Why the KV cache exists</h2>
+  <p>At the first output step, the model can attend to the prompt. At the second output step, it needs the prompt <em>and</em> the first output token. Recomputing the whole prompt on every output token would waste work.</p>
+  <pre>Without cache, to produce each next token:
+  recompute prompt + all earlier generated tokens
+
+With cache, to produce each next token:
+  reuse earlier keys/values + compute only the new token's keys/values</pre>
+  <p>The cache trades memory for speed. It grows as the context and answer grow, which is why long-context serving eventually becomes a memory-management problem as well as a latency problem.</p>
+
+  <h2>Phase 2: decode</h2>
+  <div class="card flow">
+    <span class="node">first generated token</span><span class="arrow">→</span>
+    <span class="node">append its KV state</span><span class="arrow">→</span>
+    <span class="node">predict next token</span><span class="arrow">→</span>
+    <span class="node">repeat until stop / limit</span>
+  </div>
+  <p><strong>Decode</strong> is the repeated loop that produces one new token at a time. With <code>do_sample=False</code>, our Week 1 notebook uses greedy decoding: at each step it chooses the highest-scoring next token.</p>
+  <p>For the streamed response, the server emitted token fragments such as:</p>
+  <pre>step 1 → "C"
+step 2 → "aching"
+step 3 → " is"
+step 4 → " the"
+...
+final → [DONE]</pre>
+  <p>These are tokenizer units, not guaranteed whole words. Streaming lets the user see them during decode rather than waiting for the full sequence.</p>
+
+  <h2>Worked example: walk through four decode steps</h2>
+  <div class="card"><ol>
+    <li><strong>Prefill:</strong> Qwen reads the 36 prompt tokens and fills its KV cache. It produces a score for every possible first output token.</li>
+    <li><strong>Decode step 1:</strong> greedy selection picks token ID 34, decoded as <code>"C"</code>. The model adds that token’s KV values to the cache.</li>
+    <li><strong>Decode step 2:</strong> using cached prompt context plus <code>"C"</code>, it picks token ID 11829, decoded as <code>"aching"</code>. Now the visible text is <code>"Caching"</code>.</li>
+    <li><strong>Decode step 3:</strong> using the expanded cache, it picks <code>" is"</code>. This repeats until an end token or the configured output limit is reached.</li>
+  </ol></div>
+  <p>The server code expresses this with <code>model.generate(..., use_cache=True)</code>. The non-streaming path receives all generated IDs at the end. The streaming path receives generated IDs incrementally through its streamer.</p>
+
+  <h2>Use the measurements correctly</h2>
+  <p>Our Week 1 benchmark fixed the maximum output at 64 tokens for medium and long prompts:</p>
+  <div class="card"><table>
+    <thead><tr><th>Prompt</th><th>Input tokens</th><th>Output tokens</th><th>Median total latency</th></tr></thead>
+    <tbody>
+      <tr><td>Short</td><td>36</td><td>33</td><td>0.549 s</td></tr>
+      <tr><td>Medium</td><td>45</td><td>64</td><td>1.066 s</td></tr>
+      <tr><td>Long</td><td>1,111</td><td>64</td><td>1.358 s</td></tr>
+    </tbody>
+  </table></div>
+  <p>Medium and long have the same output cap, but long has 1,066 more input tokens and a higher median total latency. That is consistent with more prefill work. But this is <strong>not</strong> a clean pure-prefill measurement: total latency also contains decode. To separate them more convincingly, we need streaming TTFT and inter-token timing—which the second Week 1 notebook begins to collect.</p>
+
+  <h2>Which knob affects which phase?</h2>
+  <div class="card"><ul>
+    <li><strong>More prompt tokens:</strong> primarily increases prefill work and TTFT.</li>
+    <li><strong>More output tokens:</strong> primarily adds more decode iterations and total latency.</li>
+    <li><strong>More concurrent requests:</strong> can add queueing and scheduling interference to both.</li>
+    <li><strong>KV-cache capacity:</strong> affects how many/long requests fit in memory, and later drives paging, eviction, prefix caching, and batching choices.</li>
+  </ul></div>
+
+  <h2>Where this appears in the roadmap</h2>
+  <ol>
+    <li><strong>Week 1:</strong> observe prefill/decode with a single local model; measure tokens, streaming, and latency.</li>
+    <li><strong>Week 2:</strong> preserve this behavior through a gateway; do not let API translation hide latency or streaming errors.</li>
+    <li><strong>Weeks 3–6:</strong> measure bottlenecks and optimize batching, cache use, quantization, and vLLM scheduling.</li>
+    <li><strong>Weeks 7–10:</strong> use the same concepts for SGLang, distributed strategies, and production capacity decisions.</li>
+  </ol>
+
+  <h2>Retrieval practice</h2>
+  <details><summary>1. Which phase must finish before the first streamed token can appear?</summary><p>Prefill must process the prompt and create the context needed to predict the first token. TTFT includes this work plus the first decode step and surrounding overhead.</p></details>
+  <details><summary>2. Why doesn’t the model recompute the full prompt for every generated token?</summary><p>The KV cache stores prior attention keys and values. Decode reuses them and computes only the newly appended token state.</p></details>
+  <details><summary>3. If output length stays fixed but input length grows from 45 to 1,111 tokens, which phase is the main new cost?</summary><p>Prefill. Decode still runs for the same capped output length, while the model must process a much longer prompt before beginning it.</p></details>
+
+  <h2>Follow-up prompt</h2>
+  <p>A user says, “The first token feels slow, but after that the answer arrives smoothly.” Which phase would you investigate first, and which metric would you use to support that conclusion?</p>
+
+  <p>References: <a href="https://huggingface.co/docs/transformers/v5.15.1/cache_explanation">Hugging Face KV caching</a>; <a href="https://huggingface.co/docs/transformers/main_classes/text_generation">Hugging Face generation</a>; <a href="https://docs.vllm.ai/en/latest/features/disagg_prefill/">vLLM disaggregated prefilling</a>.</p>
+</body>
+</html>
