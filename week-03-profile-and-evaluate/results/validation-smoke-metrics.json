@@ -1,0 +1,41 @@
+{
+  "label": "validation-smoke",
+  "gateway_url": "http://127.0.0.1:8000",
+  "mode": "matrix",
+  "cells": [
+    {
+      "prompt_length_target": 128,
+      "actual_prompt_tokens": 127,
+      "concurrency": 1,
+      "metrics": {
+        "requests": 1,
+        "successful_requests": 1,
+        "failed_requests": 0,
+        "ttft_p50_seconds": 0.08901220897678286,
+        "ttft_p95_seconds": 0.08901220897678286,
+        "total_p50_seconds": 0.16481233399827033,
+        "total_p95_seconds": 0.16481233399827033
+      },
+      "gateway_metrics": {
+        "sample_count": 2,
+        "peak_in_flight": 1.0,
+        "backend_errors_before": 0.0,
+        "backend_errors_after": 0.0,
+        "queue_time_seconds": null,
+        "queue_time_note": "unavailable: current gateway has no explicit admission queue timer",
+        "samples": [
+          {
+            "seconds": 241849.288691708,
+            "in_flight": 0.0,
+            "backend_errors_total": 0.0
+          },
+          {
+            "seconds": 241849.393187791,
+            "in_flight": 1.0,
+            "backend_errors_total": 0.0
+          }
+        ]
+      }
+    }
+  ]
+}

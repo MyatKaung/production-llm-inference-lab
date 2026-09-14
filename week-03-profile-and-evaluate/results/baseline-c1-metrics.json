@@ -1,0 +1,1378 @@
+{
+  "label": "baseline-c1",
+  "gateway_url": "http://127.0.0.1:8000",
+  "mode": "matrix",
+  "aborted_reason": null,
+  "cells": [
+    {
+      "prompt_length_target": 128,
+      "actual_prompt_tokens": 127,
+      "concurrency": 1,
+      "metrics": {
+        "requests": 10,
+        "successful_requests": 10,
+        "failed_requests": 0,
+        "ttft_p50_seconds": 0.13376708299620077,
+        "ttft_p95_seconds": 0.14523629200994037,
+        "total_p50_seconds": 0.24245662498287857,
+        "total_p95_seconds": 0.2732657919987105
+      },
+      "gateway_metrics": {
+        "sample_count": 25,
+        "peak_in_flight": 1.0,
+        "backend_errors_before": 744.0,
+        "backend_errors_after": 744.0,
+        "queue_time_seconds": null,
+        "queue_time_note": "unavailable: current gateway has no explicit admission queue timer",
+        "samples": [
+          {
+            "seconds": 242021.623501916,
+            "in_flight": 0.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242021.729053125,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242021.83352425,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242021.937815041,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242022.050417291,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242022.152982,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242022.257660625,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242022.3613965,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242022.465461958,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242022.568377666,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242022.670497,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242022.775283375,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242022.879943583,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242022.984261458,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242023.090337333,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242023.194866583,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242023.301206,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242023.404297625,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242023.508745,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242023.613126166,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242023.718029916,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242023.82286325,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242023.927224083,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242024.032890166,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242024.135903,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          }
+        ]
+      },
+      "stopped_reason": null
+    },
+    {
+      "prompt_length_target": 1024,
+      "actual_prompt_tokens": 1022,
+      "concurrency": 1,
+      "metrics": {
+        "requests": 10,
+        "successful_requests": 10,
+        "failed_requests": 0,
+        "ttft_p50_seconds": 0.4088213330251165,
+        "ttft_p95_seconds": 0.41528316601761617,
+        "total_p50_seconds": 0.5020824590174016,
+        "total_p95_seconds": 0.522299500007648
+      },
+      "gateway_metrics": {
+        "sample_count": 49,
+        "peak_in_flight": 1.0,
+        "backend_errors_before": 744.0,
+        "backend_errors_after": 744.0,
+        "queue_time_seconds": null,
+        "queue_time_note": "unavailable: current gateway has no explicit admission queue timer",
+        "samples": [
+          {
+            "seconds": 242025.483635541,
+            "in_flight": 0.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242025.588178666,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242025.691973708,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242025.794994541,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242025.898170625,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242025.999970875,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242026.10403925,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242026.20743975,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242026.3110305,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242026.41504275,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242026.518538833,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242026.624676333,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242026.728555833,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242026.832244583,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242026.934860416,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242027.037641083,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242027.142257458,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242027.246638,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242027.351137583,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242027.457334458,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242027.561275166,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242027.666074958,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242027.770810625,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242027.878127625,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242027.983011375,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242028.094742041,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242028.198929083,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242028.302535,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242028.408316291,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242028.513362875,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242028.61788875,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242028.722050166,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242028.827579916,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242028.932753375,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242029.037412583,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242029.139910208,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242029.244530666,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242029.350387166,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242029.45395525,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242029.558979083,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242029.663098875,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242029.76818825,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242029.873199916,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242029.977693291,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242030.082568458,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242030.186443416,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242030.29145,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242030.395932166,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242030.499413166,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          }
+        ]
+      },
+      "stopped_reason": null
+    },
+    {
+      "prompt_length_target": 4096,
+      "actual_prompt_tokens": 4097,
+      "concurrency": 1,
+      "metrics": {
+        "requests": 10,
+        "successful_requests": 10,
+        "failed_requests": 0,
+        "ttft_p50_seconds": 1.701447667001048,
+        "ttft_p95_seconds": 1.7724151669826824,
+        "total_p50_seconds": 1.9211754580028355,
+        "total_p95_seconds": 1.9977832499716897
+      },
+      "gateway_metrics": {
+        "sample_count": 185,
+        "peak_in_flight": 1.0,
+        "backend_errors_before": 744.0,
+        "backend_errors_after": 744.0,
+        "queue_time_seconds": null,
+        "queue_time_note": "unavailable: current gateway has no explicit admission queue timer",
+        "samples": [
+          {
+            "seconds": 242034.800750458,
+            "in_flight": 0.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242034.905335916,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242035.01172175,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242035.1155355,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242035.219515,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242035.324235916,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242035.427855791,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242035.534155,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242035.639330791,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242035.746327416,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242035.84941575,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242035.954692458,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242036.06078625,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242036.166071,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242036.272716875,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242036.378488833,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242036.481976625,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242036.586457916,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242036.689537416,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242036.794326541,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242036.898915541,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242037.003309708,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242037.10916225,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242037.214210041,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242037.319782375,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242037.425061375,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242037.53103775,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242037.636919041,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242037.742468458,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242037.84671925,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242037.949692708,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242038.054051416,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242038.15772,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242038.260702458,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242038.363948333,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242038.467074208,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242038.5698765,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242038.674383333,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242038.7790625,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242038.88458,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242038.989204541,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242039.094843541,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242039.200695333,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242039.306778666,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242039.4123155,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242039.518500291,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242039.624399875,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242039.728716666,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242039.835186416,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242039.941345666,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242040.048112083,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242040.153555583,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242040.257684791,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242040.361957625,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242040.466291333,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242040.572191,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242040.6754965,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242040.780949666,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242040.886773625,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242040.992276333,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242041.096068375,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242041.199925916,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242041.306200583,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242041.4113485,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242041.51768975,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242041.623321583,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242041.728025541,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242041.832728625,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242041.939221041,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242042.045214416,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242042.148958958,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242042.253837583,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242042.357811375,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242042.461871958,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242042.565774333,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242042.671503,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242042.776690333,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242042.881138875,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242042.986689708,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242043.092588875,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242043.197139416,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242043.300834166,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242043.404494958,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242043.510379791,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242043.616122875,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242043.721438166,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242043.825357541,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242043.931174416,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242044.038096666,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242044.142079583,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242044.245414125,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242044.349674583,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242044.454866458,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242044.557199625,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242044.661907916,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242044.766540416,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242044.872262166,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242044.975488041,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242045.079694833,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242045.184724041,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242045.29054125,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242045.397538291,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242045.501937041,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242045.604533666,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242045.708897958,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242045.813590958,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242045.918586958,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242046.022409166,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242046.127800958,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242046.232257041,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242046.336860958,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242046.441602875,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242046.546233708,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242046.650489583,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242046.757063,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242046.86188275,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242046.967674166,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242047.074150083,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242047.180200958,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242047.286475666,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242047.390792708,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242047.497682916,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242047.602305791,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242047.708429041,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242047.814917791,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242047.920488708,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242048.026045291,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242048.131401208,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242048.235564958,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242048.346209,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242048.449270833,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242048.552869708,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242048.657898958,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242048.763903916,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242048.869034041,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242048.973948958,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242049.079504041,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242049.184032333,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242049.290285541,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242049.397258166,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242049.503062541,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242049.607205083,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242049.713279416,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242049.818157541,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242049.924405666,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242050.029894583,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242050.134761333,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242050.238824875,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242050.345484416,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242050.448892625,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242050.554882166,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242050.659892708,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242050.765255208,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242050.871556791,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242050.975350208,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242051.079705375,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242051.186337041,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242051.292401416,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242051.398363,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242051.50316725,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242051.609318333,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242051.715022291,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242051.82038225,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242051.925282,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242052.0310255,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242052.13562025,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242052.239828208,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242052.3443775,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242052.448387958,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242052.553598333,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242052.657988833,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242052.763291041,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242052.866709375,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242052.971816708,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242053.075598166,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242053.181019458,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242053.2857355,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242053.391777583,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242053.496984416,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242053.603495,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242053.7092635,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242053.815259,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242053.921142916,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242054.025238583,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          },
+          {
+            "seconds": 242054.130209666,
+            "in_flight": 1.0,
+            "backend_errors_total": 744.0
+          }
+        ]
+      },
+      "stopped_reason": null
+    }
+  ]
+}

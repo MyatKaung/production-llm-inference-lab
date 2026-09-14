@@ -14,6 +14,26 @@ Build a gateway that accepts one stable client API and can forward the request t
 
 In `02-inference-gateway`, implement `/v1/chat/completions`. Add streaming SSE, request IDs, timeout, cancellation, input/output token limits, backend adapters, and basic Prometheus metrics.
 
+The working gateway is in `gateway.py`; its deterministic fake-backend tests are in `tests/test_gateway.py`. Start the Week 01 server on port `8001`, then start the gateway from the repository root:
+
+```bash
+uv run --python .venv/bin/python uvicorn gateway:app \
+  --app-dir week-02-inference-gateway --host 127.0.0.1 --port 8000
+```
+
+Run the unit tests without starting Qwen:
+
+```bash
+uv run --python .venv/bin/python pytest week-02-inference-gateway/tests/test_gateway.py -q
+```
+
+Run the real integration tests only after the Week 01 server is running:
+
+```bash
+RUN_WEEK1_INTEGRATION=1 uv run --python .venv/bin/python pytest \
+  week-02-inference-gateway/tests/test_gateway_integration.py -q
+```
+
 ## Test today
 
 Use a fake backend first, then the Week 1 server. Test one successful request in each mode and these failure paths: malformed JSON, missing messages, too many input tokens, too many output tokens, backend timeout, backend 5xx, client disconnect during streaming, and unknown backend name.

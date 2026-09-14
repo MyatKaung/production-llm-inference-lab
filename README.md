@@ -54,3 +54,5 @@ The original five work areas are distributed across these ten weekly projects. T
 Use a model that fits the hardware and preserves the experiment. Start with a 0.5B-3B instruct model locally, use 7B-14B when a suitable GPU is available, and attempt 70B only when multi-GPU capacity is explicitly available. The project evaluates engineering decisions; it does not require pretending to run a 405B model.
 
 Start with [Week 00](week-00-hardware-preflight/README.md), use [ROADMAP.md](ROADMAP.md) for the complete mapping, and follow [OUTSOURCE_SPEC.md](OUTSOURCE_SPEC.md) for the strict boundary on outside help.
+
+Reference material from the class repository is available under [references/class-code](references/class-code/), with a guide to the relevant examples in [references/README.md](references/README.md).

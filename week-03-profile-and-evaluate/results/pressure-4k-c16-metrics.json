@@ -1,0 +1,48 @@
+{
+  "label": "pressure-4k-c16",
+  "gateway_url": "http://127.0.0.1:8000",
+  "mode": "pressure",
+  "aborted_reason": "stopped after prompt\u22484096, concurrency=16: a measured wave contained failed requests",
+  "cells": [
+    {
+      "prompt_length_target": 4096,
+      "actual_prompt_tokens": 4097,
+      "concurrency": 16,
+      "metrics": {
+        "requests": 16,
+        "successful_requests": 0,
+        "failed_requests": 16,
+        "ttft_p50_seconds": null,
+        "ttft_p95_seconds": null,
+        "total_p50_seconds": null,
+        "total_p95_seconds": null
+      },
+      "gateway_metrics": {
+        "sample_count": 2,
+        "peak_in_flight": 16.0,
+        "backend_errors_before": 776.0,
+        "backend_errors_after": 792.0,
+        "queue_time_seconds": null,
+        "queue_time_note": "unavailable: current gateway has no explicit admission queue timer",
+        "samples": [
+          {
+            "seconds": 242070.60939075,
+            "in_flight": 0.0,
+            "backend_errors_total": 776.0
+          },
+          {
+            "seconds": 242070.718510458,
+            "in_flight": 16.0,
+            "backend_errors_total": 776.0
+          }
+        ]
+      },
+      "stopped_reason": "a measured wave contained failed requests"
+    }
+  ],
+  "post_run_gateway_check": {
+    "in_flight": 0.0,
+    "backend_errors_total": 792.0,
+    "note": "Read after the gateway completed stream-error bookkeeping."
+  }
+}

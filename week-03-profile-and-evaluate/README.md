@@ -12,7 +12,7 @@ Build the benchmark input set, deterministic quality scorer, hardware feasibilit
 
 ## Do
 
-Profile prompt lengths 128, 1K, and 4K at concurrency 1, 4, and 16. Separate queue, prefill, decode, and client/network time. Create a fixed evaluation set with deterministic scoring before quantization.
+Profile prompt lengths 128, 1K, and 4K at concurrency 1, 4, and 16 through the public gateway. Separate queue, prefill, decode, and client/network time. Create a fixed evaluation set with deterministic scoring before quantization. Add one controlled long-prompt/high-concurrency pressure case and document the first observed system limit.
 
 ## Test today
 
@@ -22,9 +22,52 @@ Create 10-20 evaluation prompts covering instruction following, extraction, summ
 
 Classify each condition as compute-bound, memory-bandwidth-bound, or queue-bound and support the classification with utilization, latency, or scaling evidence.
 
+For the pressure case, record successful and failed requests, p50/p95 TTFT and total latency, gateway in-flight/error metrics, and any observed memory pressure. Stop if the machine becomes unresponsive or errors repeat; the purpose is to find the boundary, not to force a crash.
+
+## Run today
+
+Start the Week 01 model server on port `8001`, then the Week 02 gateway on port `8000`. The Week 3 tools call only the public gateway.
+
+Run the fixed quality set twice. The second run verifies that every case has the same pass/fail outcome as the first:
+
+```bash
+uv run --python .venv/bin/python week-03-profile-and-evaluate/quality_gate.py \
+  --label baseline-run-1
+
+uv run --python .venv/bin/python week-03-profile-and-evaluate/quality_gate.py \
+  --label baseline-run-2 \
+  --compare-with week-03-profile-and-evaluate/results/quality-baseline-run-1.json
+```
+
+First smoke-test one short streaming wave:
+
+```bash
+uv run --python .venv/bin/python week-03-profile-and-evaluate/benchmark_client.py \
+  --mode matrix --prompt-lengths 128 --concurrencies 1 \
+  --warmup-waves 1 --measured-waves 1 --max-tokens 16 --label smoke
+```
+
+Then run the matrix. A wave contains the configured number of simultaneous requests, so ten measured waves at concurrency 16 create 160 measured request records for that cell. The client completes every concurrency-1 cell first, then stops after the first failed concurrent wave by default. This preserves valid evidence and avoids repeatedly hitting a crashed backend:
+
+```bash
+uv run --python .venv/bin/python week-03-profile-and-evaluate/benchmark_client.py \
+  --mode matrix --label baseline
+```
+
+Use `--continue-after-failure` only when you have confirmed that the backend remains healthy after the failure. It is intentionally not the default.
+
+Run the pressure case only after the matrix has completed:
+
+```bash
+uv run --python .venv/bin/python week-03-profile-and-evaluate/benchmark_client.py \
+  --mode pressure --label pressure-4k-c16
+```
+
+The guided version of this sequence is [`01-quality-gate-and-gateway-profile.ipynb`](01-quality-gate-and-gateway-profile.ipynb). It keeps the full matrix and pressure case disabled until you explicitly enable them.
+
 ## Output
 
-Hardware/model feasibility sheet, baseline bottleneck report, evaluation set, scorer, and baseline quality score.
+Hardware/model feasibility sheet, baseline bottleneck report, evaluation set, scorer, quality-run artifacts, raw benchmark rows, and gateway-metrics artifacts.
 
 ## Done when
 
@@ -32,6 +75,7 @@ Hardware/model feasibility sheet, baseline bottleneck report, evaluation set, sc
 - [ ] Queue, prefill, decode, and client time are separated or explicitly marked unavailable.
 - [ ] Baseline quality scoring is repeatable.
 - [ ] A written bottleneck hypothesis is supported by measurements.
+- [ ] The controlled pressure case has an honest success/error and tail-latency record.
 
 ## Course alignment
 

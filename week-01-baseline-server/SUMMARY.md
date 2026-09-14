@@ -52,12 +52,24 @@ The medium and long prompts both generated 64 tokens. Their total latency theref
 
 The long prompt produced about 47 effective output tokens per second compared with about 60 for the shorter prompts. This rate includes prefill, so it should not yet be interpreted as pure decode speed.
 
+## Streaming results
+
+The streaming notebook completed five warm runs for the short prompt:
+
+| Metric | Result |
+| --- | ---: |
+| TTFT median | 0.0286 s |
+| Total streaming latency median | 0.5996 s |
+| Inter-token latency median | 0.0179 s |
+| Inter-token latency p95 | 0.0197 s |
+| Effective streaming rate median | 55.04 tok/s |
+
+The first run had a higher TTFT of approximately 0.0819 seconds, consistent with runtime warm-up. The remaining runs were approximately 0.028 seconds TTFT. These are local in-process measurements; HTTP, queue, and network overhead are not included yet.
+
 ## What this result does not prove yet
 
 This file does not yet contain:
 
-- streaming TTFT;
-- per-token inter-token latency;
 - queue time;
 - client/network overhead;
 - concurrency behavior;
@@ -65,16 +77,14 @@ This file does not yet contain:
 - a quality score;
 - a Hugging Face server HTTP benchmark.
 
-Therefore this is a valid first local generation baseline, but it is not yet the complete production-serving baseline required by the Week 01 acceptance criteria.
+Therefore this is a valid local generation and streaming baseline, but it is not yet the complete production-serving baseline required by the Week 01 acceptance criteria.
 
 ## Next tests
 
-1. Run the streaming cell and record TTFT, total streaming latency, and emitted chunks.
-2. Run `streaming-and-missing-metrics.ipynb` to record per-token timing and save `streaming-metrics.json`.
-3. Add explicit process/model-load cold-start measurements.
-4. Run the same request through the Week 01 HTTP server.
-5. Save the exact environment output with `python --version`, `uv pip list`, device, and model revision.
-6. Build the Week 02 gateway and repeat one streaming and one non-streaming request through port `8000`.
+1. Add explicit process/model-load cold-start measurements.
+2. Run the same request through the Week 01 HTTP server and compare HTTP versus in-process latency.
+3. Save the exact environment output with `python --version`, `uv pip list`, device, and model revision.
+4. Build the Week 02 gateway and repeat one streaming and one non-streaming request through port `8000`.
 
 ## Evidence
 

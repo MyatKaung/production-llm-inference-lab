@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Week 3: Profile the system and create a quality gate</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+  <p><a href="00-course-map.html">Course map</a> / Week 3.1</p>
+  <h1>Profile the system and protect answer quality</h1>
+  <p>Weeks 1 and 2 proved that one model can serve requests and that a gateway can hide the model-server details. Week 3 answers a different question: <em>What does the system do under controlled workloads, and can later optimizations make it faster without making answers worse?</em></p>
+
+  <h2>The Week 3 outcome</h2>
+  <div class="card flow">
+    <span class="node">fixed evaluation set</span><span class="arrow">→</span>
+    <span class="node">deterministic scorer</span><span class="arrow">→</span>
+    <span class="node">gateway benchmark matrix</span><span class="arrow">→</span>
+    <span class="node">controlled pressure case</span><span class="arrow">→</span>
+    <span class="node">bottleneck report</span>
+  </div>
+  <p>The result is a baseline that every later change—quantization, batching, vLLM, or tuning—must compare against.</p>
+
+  <h2>What you will create</h2>
+  <pre>week-03-profile-and-evaluate/
+├── eval/
+│   ├── cases.jsonl
+│   └── expected-results.json
+├── scorer.py
+├── quality_gate.py
+├── benchmark_client.py
+├── 01-quality-gate-and-gateway-profile.ipynb
+├── hardware-feasibility.md
+├── results/
+│   ├── quality-baseline-run-1.json
+│   ├── baseline-matrix.jsonl
+│   └── baseline-metrics.json
+├── tests/
+│   ├── test_scorer.py
+│   └── test_benchmark_client.py
+└── BOTTLENECK-REPORT.md</pre>
+
+  <h2>Part 1: create the quality gate first</h2>
+  <p>Performance data is not enough. A faster configuration that produces worse answers is not automatically an improvement. Before measuring any optimization, make a fixed set of 10–20 prompts and score the results using deterministic rules.</p>
+
+  <h3>Worked example: property-based scoring</h3>
+  <p>This test does not require one exact sentence. It requires observable properties.</p>
+  <pre>{
+  "id": "extract-01",
+  "category": "extraction",
+  "messages": [
+    {"role": "user", "content": "Extract the city from: Alice moved to Singapore in 2024."}
+  ],
+  "expected": {
+    "contains": ["Singapore"],
+    "not_contains": ["Kuala Lumpur"]
+  }
+}</pre>
+  <p>A deterministic scorer can lower-case the completion, verify that it contains <code>singapore</code>, and verify that it does not contain <code>kuala lumpur</code>. The result is pass or fail—no language-model judge and no subjective hand scoring.</p>
+
+  <div class="card">
+    <p><strong>Suggested categories:</strong></p>
+    <ul>
+      <li>instruction following;</li>
+      <li>fact extraction;</li>
+      <li>short summarization;</li>
+      <li>simple structured JSON;</li>
+      <li>basic reasoning with a known answer;</li>
+      <li>refusal or safety behavior relevant to your application.</li>
+    </ul>
+  </div>
+
+  <h3>Practical check</h3>
+  <ol>
+    <li>Run the same evaluation set through <code>POST :8000/v1/chat/completions</code> twice.</li>
+    <li>Use <code>do_sample=false</code> in the Week 1 backend, so the answers are deterministic.</li>
+    <li>Confirm that both runs have the same score.</li>
+    <li>Save that score as the baseline quality gate.</li>
+  </ol>
+  <p class="note">Do not change the prompts, model revision, sampling configuration, or scorer between before/after experiments. If you change the ruler, you cannot compare the measurements.</p>
+
+  <h2>Part 2: benchmark the public system, not only Qwen</h2>
+  <p>Your primary Week 3 benchmark goes through the gateway. The user-visible system includes both the gateway and the model server.</p>
+  <div class="card flow">
+    <span class="node">benchmark client</span><span class="arrow">→</span>
+    <span class="node">gateway :8000</span><span class="arrow">→</span>
+    <span class="node">Week 1 server :8001</span><span class="arrow">→</span>
+    <span class="node">Qwen</span>
+  </div>
+  <p>The client must not call port <code>8001</code> directly for the main report. A direct request can be useful later as a diagnostic comparison, but it is not the public system’s end-to-end result.</p>
+
+  <h3>The fixed matrix</h3>
+  <table>
+    <thead><tr><th>Prompt length</th><th>Concurrency</th><th>Purpose</th></tr></thead>
+    <tbody>
+      <tr><td>128 tokens</td><td>1, 4, 16</td><td>Interactive, short-context behavior</td></tr>
+      <tr><td>1K tokens</td><td>1, 4, 16</td><td>Moderate prefill pressure</td></tr>
+      <tr><td>4K tokens</td><td>1, 4, 16</td><td>Long-context prefill pressure</td></tr>
+    </tbody>
+  </table>
+  <p>This creates nine benchmark cells. Start with 2 warm-up waves and 10 measured waves per cell. A wave contains the configured concurrency, so one concurrency-16 wave means 16 requests begin together. The client runs every concurrency-1 cell first, then stops after the first failed concurrent wave by default; this preserves valid evidence instead of repeatedly sending work to an unhealthy backend. Use a fixed 64-token output limit and greedy generation.</p>
+
+  <h3>Worked example: one benchmark row</h3>
+  <pre>{
+  "prompt_length_target": 1024,
+  "actual_prompt_tokens": 1017,
+  "concurrency": 4,
+  "max_tokens": 64,
+  "warmups": 2,
+  "measured_request": 3,
+  "ttft_seconds": 0.42,
+  "total_latency_seconds": 1.51,
+  "output_tokens": 64,
+  "status_code": 200,
+  "request_id": "req_..."
+}</pre>
+  <p>Save raw rows like this in <code>baseline-matrix.jsonl</code>. Do not save only an average. Raw rows let you calculate p50 and p95 later and investigate slow outliers.</p>
+
+  <h2>Part 3: add one controlled pressure case</h2>
+  <p>The nine benchmark cells measure normal scaling. Add one deliberately demanding case so you can observe how the complete public system behaves when several long requests arrive together.</p>
+  <div class="card">
+    <p><strong>Pressure case:</strong> 4K-token prompt, concurrency 16, fixed 64-token output, after the normal warm-up.</p>
+    <p>Record the outcome rather than predicting it:</p>
+    <ul>
+      <li>how many requests succeeded and how many failed;</li>
+      <li>p50 and p95 TTFT and total latency;</li>
+      <li>the gateway's in-flight request metric and backend-error metric; and</li>
+      <li>any visible memory-pressure or out-of-memory observation.</li>
+    </ul>
+  </div>
+  <p>This is not an attempt to crash the computer. Stop if the machine becomes unresponsive or errors repeat. The lesson is to identify the first real limit of the current gateway-and-server system.</p>
+  <p class="note">This is the useful Class 2 addition. We are not copying its engine swap or cloud setup yet. We are only adding its principle: measure the system under controlled concurrent pressure and record the failure boundary honestly.</p>
+
+  <h2>Part 4: learn what each time means</h2>
+  <div class="card flow">
+    <span class="node">client sends request</span><span class="arrow">→</span>
+    <span class="node">waiting / queue time</span><span class="arrow">→</span>
+    <span class="node">prefill</span><span class="arrow">→</span>
+    <span class="node">first token: TTFT</span><span class="arrow">→</span>
+    <span class="node">decode / ITL</span><span class="arrow">→</span>
+    <span class="node">[DONE]</span>
+  </div>
+  <ul>
+    <li><strong>Queue time:</strong> waiting before the model begins work. Your current stack has no explicit admission queue, so mark it <code>unavailable</code> until you add queue instrumentation.</li>
+    <li><strong>Prefill:</strong> processing all existing prompt tokens through the Transformer. Longer prompts usually increase this cost.</li>
+    <li><strong>TTFT:</strong> client request start until the first streamed output reaches the client. It includes gateway/server overhead, prefill, and first-token delivery.</li>
+    <li><strong>Inter-token latency (ITL):</strong> time between streamed token events. It describes the decode phase.</li>
+    <li><strong>Total latency:</strong> client request start until the final <code>[DONE]</code> event.</li>
+  </ul>
+  <p class="note">Do not claim that client-observed TTFT is identical to pure model prefill time. It contains several pieces. Keep the measurement name honest.</p>
+
+  <h2>Part 5: hardware feasibility before larger models</h2>
+  <p>Write down whether a candidate model fits before trying to load it. Approximate FP16 weight memory as:</p>
+  <pre>weight memory ≈ parameter count × 2 bytes</pre>
+  <p>Then reserve extra memory for the KV cache, activations, runtime allocations, and fragmentation.</p>
+  <table>
+    <thead><tr><th>Model</th><th>FP16 weights only</th><th>Extra memory needed</th><th>Decision</th></tr></thead>
+    <tbody>
+      <tr><td>3B</td><td>about 6 GB</td><td>KV cache + runtime</td><td>reasonable candidate</td></tr>
+      <tr><td>7B</td><td>about 14 GB</td><td>KV cache + runtime</td><td>borderline on 18 GB unified memory</td></tr>
+      <tr><td>14B</td><td>about 28 GB</td><td>KV cache + runtime</td><td>use a suitable NVIDIA GPU</td></tr>
+    </tbody>
+  </table>
+  <p>These are planning estimates, not guarantees. Quantization changes the calculation, but do not use quantization until the Week 3 baseline and quality score exist.</p>
+
+  <h2>Part 6: write a bottleneck hypothesis</h2>
+  <p>After the nine benchmark cells, classify each workload using evidence—not intuition.</p>
+  <pre>Short prompt, concurrency 1:
+  likely decode-dominated if TTFT is low and output length drives total latency.
+
+Long prompt, concurrency 1:
+  likely prefill-dominated if TTFT rises strongly with prompt length.
+
+High concurrency:
+  likely queue/scheduling-limited if tail latency rises faster than throughput.</pre>
+  <p>Your report must say what you measured, what you infer, and what you could not measure yet.</p>
+
+  <h2>Build order</h2>
+  <div class="card"><ol>
+    <li>Create <code>eval/cases.jsonl</code> and a deterministic <code>scorer.py</code>.</li>
+    <li>Run the evaluation set twice and save the baseline quality score.</li>
+    <li>Run <code>quality_gate.py</code> twice; it writes the raw completions and invokes the deterministic scorer.</li>
+    <li>Run the short smoke cell in <code>01-quality-gate-and-gateway-profile.ipynb</code>, then use <code>benchmark_client.py</code> for streaming requests through port <code>8000</code>.</li>
+    <li>Run the nine-cell prompt-length/concurrency matrix.</li>
+    <li>Run and record the 4K-token, concurrency-16 pressure case.</li>
+    <li>Write <code>hardware-feasibility.md</code>.</li>
+    <li>Write <code>BOTTLENECK-REPORT.md</code> from the raw data, including the pressure-case boundary.</li>
+  </ol></div>
+
+  <h2>Self-check</h2>
+  <details><summary>1. Why do we score quality before running Week 4 optimization experiments?</summary><p>So every later performance gain can be checked against the same fixed quality baseline. Otherwise a faster but worse model configuration might look like a win.</p></details>
+  <details><summary>2. Why does a 4K-token prompt usually affect TTFT more than a 128-token prompt?</summary><p>The model must prefill all existing prompt tokens before it can produce the first output token.</p></details>
+  <details><summary>3. Why is it wrong to report client-observed TTFT as “pure prefill time”?</summary><p>TTFT also includes client, gateway, server, and first-token-delivery overhead. It is a useful user-visible metric, but it is not an isolated internal model timer.</p></details>
+  <details><summary>4. What should you write if your current service has no explicit request queue?</summary><p>Mark queue time unavailable. Do not guess it. Add instrumentation later if queue analysis becomes necessary.</p></details>
+  <details><summary>5. What is the purpose of the deliberate pressure case?</summary><p>To find and document the first limit of the current public system: rising tail latency, repeated errors, or memory pressure. It is evidence for the next engineering change, not a test you must force until the machine crashes.</p></details>
+
+  <h2>Start here today</h2>
+  <p>Open <a href="../week-03-profile-and-evaluate/01-quality-gate-and-gateway-profile.ipynb">the Week 3 guided notebook</a>. Do not start the full matrix until you can run the quality gate twice and get the same score.</p>
+
+  <p>References: <a href="../week-03-profile-and-evaluate/README.md">Week 3 README</a>; HLSO Chapter 5; DAS Chapter 2; AISPE Chapters 2–3.</p>
+</body>
+</html>
